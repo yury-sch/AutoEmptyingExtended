@@ -1,4 +1,5 @@
-﻿using ColossalFramework;
+﻿using System.Reflection;
+using ColossalFramework;
 using ColossalFramework.UI;
 using UnityEngine;
 
@@ -6,8 +7,8 @@ namespace AutoEmptyingExtended.Panels
 {
     public class EmptyingPanel : UIPanel
     {
-        internal CityServiceWorldInfoPanel ServicePanel { private get; set; }
-        
+        private int _selectedBuilding;
+
         public override void Start()
         {
             base.Start();
@@ -20,21 +21,39 @@ namespace AutoEmptyingExtended.Panels
             this.height = 100;
         }
 
-        internal void OnVisibilityChanged(UIComponent component, bool show)
+        public override void Update()
         {
-            //this.isVisible = false;
-            if (show)
+            var instanceId = WorldInfoPanel.GetCurrentInstanceID();
+            if (instanceId.Type == InstanceType.Building && instanceId.Building != 0)
             {
-                var buildingId = WorldInfoPanel.GetCurrentInstanceID().Building;
-
-                //At first click buildingId == 0. Why?
-                Debug.Log($"EmptyingPanel {buildingId}");
-                var buildingAi = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId].Info.m_buildingAI;
-                if (buildingAi is LandfillSiteAI || buildingAi is CemeteryAI)
+                var buildingId = instanceId.Building;
+                if (_selectedBuilding != buildingId)
                 {
-                    //this.isVisible = true;
+                    _selectedBuilding = buildingId;
+
+                    Debug.Log($"EmptyingPanel {buildingId}");
+                    var buildingAi = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId].Info.m_buildingAI;
+                    if (buildingAi is LandfillSiteAI || buildingAi is CemeteryAI)
+                    {
+                        this.isVisible = true;
+                        //Do something (update emptying display data)
+                    }
+                    else
+                    {
+                        this.isVisible = false;
+                    }
+
                 }
             }
+
+            base.Update();
         }
+
+        //internal void OnVisibilityChanged(UIComponent component, bool show)
+        //{
+        //    if (show)
+        //        _needUpdate = true;
+        //}
+        
     }
 }

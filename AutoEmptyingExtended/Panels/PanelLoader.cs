@@ -8,7 +8,14 @@ namespace AutoEmptyingExtended.Panels
     {
         private LoadMode _mode;
         private GameObject _bwGameObject;
-        private EmptyingPanel _emptyingPanel;
+        
+        private void InitWindows()
+        {
+            var serviceBuildingInfo = UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
+            var emptyingPanel = _bwGameObject.AddComponent<EmptyingPanel>();
+            emptyingPanel.transform.parent = serviceBuildingInfo.transform;
+            //serviceBuildingInfo.eventVisibilityChanged += (component, show) => emptyingPanel.OnVisibilityChanged(component, show);
+        }
 
         public override void OnLevelLoaded(LoadMode mode)
         {
@@ -16,15 +23,9 @@ namespace AutoEmptyingExtended.Panels
                 return;
             _mode = mode;
 
-            _bwGameObject = new GameObject("buildingWindowObject");
-            var serviceBuildingInfo = UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
-
-            _emptyingPanel = _bwGameObject.AddComponent<EmptyingPanel>();
-            _emptyingPanel.transform.parent = serviceBuildingInfo.transform;
-            _emptyingPanel.ServicePanel = serviceBuildingInfo.gameObject.transform.GetComponentInChildren<CityServiceWorldInfoPanel>();
-            serviceBuildingInfo.eventVisibilityChanged += (component, show) => _emptyingPanel.OnVisibilityChanged(component, show);
+            _bwGameObject = new GameObject("AUEBuildingWindowObject");
+            InitWindows();
         }
-
 
         public override void OnLevelUnloading()
         {
@@ -32,9 +33,7 @@ namespace AutoEmptyingExtended.Panels
                 return;
             
             if (_bwGameObject != null)
-            {
-                UnityEngine.Object.Destroy(_bwGameObject);
-            }
+                Object.Destroy(_bwGameObject);
         }
     }
 }
