@@ -24,6 +24,8 @@ namespace AutoEmptyingExtended
         
         private void HandleLandfill(ushort buildingId, ref BuildingAI buildingAi)
         {
+            //DayNightProperties.instance.m_TimeOfDay.
+
             var lsAi = buildingAi as LandfillSiteAI;
 
             if (lsAi.m_electricityProduction > 0)
@@ -87,7 +89,8 @@ namespace AutoEmptyingExtended
             {
                 if (_buildingManager.m_buildings.m_buffer[i].m_flags == Building.Flags.None)
                     continue;
-                
+
+                //change and test to _buildingManager.m_buildings.m_buffer[i].Info.m_buildingAI;
                 BuildingAI buildingAi = _buildingManager.m_buildings.m_buffer[i].Info.GetComponent<PlayerBuildingAI>();
 
                 if (buildingAi is LandfillSiteAI)

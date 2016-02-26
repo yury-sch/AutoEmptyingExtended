@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using AutoEmptyingExtended.UI;
 using ColossalFramework;
 using ColossalFramework.UI;
 using UnityEngine;
@@ -9,17 +10,24 @@ namespace AutoEmptyingExtended.Panels
     {
         private int _selectedBuilding;
 
+        [Range(0.0f, 24f)]
+        public float m_TimeOfDay;
+
         public override void Start()
         {
             base.Start();
 
-            this.backgroundSprite = "MenuPanel2";
+            this.backgroundSprite = "MenuPanelInfo";
             this.position = new Vector3(0, 12);
             this.width = this.parent.width;
-
             //temp
             this.height = 100;
+
+            var uiTimeRange = this.AddUIComponent<UITimeRange>();
+            uiTimeRange.position = new Vector3(15, -15);
+            uiTimeRange.size = new Vector2(this.width - uiTimeRange.position.x * 2, 40);
         }
+        
 
         public override void Update()
         {
