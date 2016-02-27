@@ -12,6 +12,8 @@ namespace AutoEmptyingExtended.Panels
 
         #endregion
 
+        private string _text = "<default_text>";
+
         public bool Checked
         {
             get
@@ -36,18 +38,13 @@ namespace AutoEmptyingExtended.Panels
 
         public string Text
         {
-            set { _description.text = value; }
-        }
+            set
+            {
+                _text = value;
 
-        public override void Awake()
-        {
-            base.Awake();
-
-            // add sub-components
-            //_checkbox = AddUIComponent<UIButton>();
-            //_description = AddUIComponent<UILabel>();
-            
-            //_checkbox.normalFgSprite = "check-unchecked";
+                if (_description != null)
+                    _description.text = value;
+            }
         }
 
         public override void Start()
@@ -55,7 +52,7 @@ namespace AutoEmptyingExtended.Panels
             base.Start();
 
             // configure panel
-            height = 20;
+            height = 16;
             width = 400;
             isVisible = true;
             isEnabled = true;
@@ -72,11 +69,10 @@ namespace AutoEmptyingExtended.Panels
             _checkbox.eventClick += (component, param) => { Checked = !Checked; };
 
             _description = AddUIComponent<UILabel>();
-            _description.text = "<default_text>";
+            _description.text = _text;
             _description.autoHeight = true;
             _description.autoSize = true;
             _description.relativePosition = new Vector3(_checkbox.relativePosition.x + _checkbox.width + inset, 0);
-
         }
     }
 }
