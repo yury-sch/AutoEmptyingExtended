@@ -12,8 +12,12 @@ namespace AutoEmptyingExtended.Panels
         private void InitWindows()
         {
             var serviceBuildingInfo = UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
+
             var emptyingPanel = _bwGameObject.AddComponent<EmptyingPanel>();
             emptyingPanel.transform.parent = serviceBuildingInfo.transform;
+            
+            serviceBuildingInfo.AddUIComponent<BuildingInfoPanel>();
+            
             //serviceBuildingInfo.eventVisibilityChanged += (component, show) => emptyingPanel.OnVisibilityChanged(component, show);
         }
 
