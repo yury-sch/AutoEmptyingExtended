@@ -56,8 +56,8 @@
     <Compile Include="ModIdentity.cs" />
     <Compile Include="Panels\CheckboxSubPanel.cs" />
     <Compile Include="Panels\BuildingInfoPanel.cs" />
-    <Compile Include="Panels\PanelLoader.cs" />
-    <Compile Include="Panels\EmptyingPanel.cs" />
+    <Compile Include="UIInitializer.cs" />
+    <Compile Include="Panels\ConfigurationPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\UITimeRange.cs" />
   </ItemGroup>
