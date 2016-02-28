@@ -52,7 +52,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildingDataManager.cs" />
     <Compile Include="EmptyingMonitor.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="ModIdentity.cs" />
     <Compile Include="Panels\CheckboxSubPanel.cs" />
     <Compile Include="Panels\BuildingInfoPanel.cs" />
