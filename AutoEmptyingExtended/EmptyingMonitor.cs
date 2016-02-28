@@ -1,4 +1,5 @@
-﻿using ColossalFramework;
+﻿using System;
+using ColossalFramework;
 using ICities;
 
 namespace AutoEmptyingExtended
@@ -22,43 +23,41 @@ namespace AutoEmptyingExtended
 
         #region Utilities
         
-        private void HandleLandfill(ushort buildingId, ref BuildingAI buildingAi)
+        private void HandleLandfill(ushort buildingId, ref Building building)
         {
-            //DayNightProperties.instance.m_TimeOfDay.
+            var lsAi = building.Info.m_buildingAI as LandfillSiteAI;
+            if (lsAi == null)
+                throw new Exception("not landfill");
 
-            var lsAi = buildingAi as LandfillSiteAI;
-
-            if (lsAi.m_electricityProduction > 0)
-                return;
-
-            var garbageAmount = _buildingManager.m_buildings.m_buffer[buildingId].m_customBuffer1 * 1000 + _buildingManager.m_buildings.m_buffer[buildingId].m_garbageBuffer;
+            var garbageAmount = building.m_customBuffer1 * 1000 + building.m_garbageBuffer;
             var percentage = garbageAmount / lsAi.m_garbageCapacity;
 
-            if (percentage > 0.9f && (_buildingManager.m_buildings.m_buffer[buildingId].m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+            if (percentage > 0.9f && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
             {
-                lsAi.SetEmptying(buildingId, ref _buildingManager.m_buildings.m_buffer[buildingId], true);
+                lsAi.SetEmptying(buildingId, ref building, true);
             }
             else if (garbageAmount == 0)
             {
-                lsAi.SetEmptying(buildingId, ref _buildingManager.m_buildings.m_buffer[buildingId], false);
+                lsAi.SetEmptying(buildingId, ref building, false);
             }
         }
 
-        private void HandleCemetery(ushort buildingId, ref BuildingAI buildingAi)
+        private void HandleCemetery(ushort buildingId, ref Building building)
         {
-            var cemeteryAi = buildingAi as CemeteryAI;
+            var cemeteryAi = building.Info.m_buildingAI as CemeteryAI;
+            if (cemeteryAi == null)
+                throw new Exception("not cemetery");
 
-            if (cemeteryAi.m_graveCount == 0)
-                return;
-            
-            var percentage = _buildingManager.m_buildings.m_buffer[buildingId].m_customBuffer1 / cemeteryAi.m_graveCount;
-            if (percentage > 0.9f && (_buildingManager.m_buildings.m_buffer[buildingId].m_flags & Building.Flags.Downgrading) == Building.Flags.None)
+            var corpseCount = building.m_customBuffer1;
+            var percentage = corpseCount / cemeteryAi.m_graveCount;
+
+            if (percentage > 0.9f && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None)
             {
-                cemeteryAi.SetEmptying(buildingId, ref _buildingManager.m_buildings.m_buffer[buildingId], true);
+                cemeteryAi.SetEmptying(buildingId, ref building, true);
             }
-            else if (_buildingManager.m_buildings.m_buffer[buildingId].m_customBuffer1 == 0)
+            else if (corpseCount == 0)
             {
-                cemeteryAi.SetEmptying(buildingId, ref _buildingManager.m_buildings.m_buffer[buildingId], false);
+                cemeteryAi.SetEmptying(buildingId, ref building, false);
             }
         }
 
@@ -87,19 +86,22 @@ namespace AutoEmptyingExtended
         {
             for (ushort i = 0; i < _buildingManager.m_buildings.m_buffer.Length; i++)
             {
-                if (_buildingManager.m_buildings.m_buffer[i].m_flags == Building.Flags.None)
+                var building = _buildingManager.m_buildings.m_buffer[i];
+                if (building.m_flags == Building.Flags.None)
                     continue;
 
-                //change and test to _buildingManager.m_buildings.m_buffer[i].Info.m_buildingAI;
-                BuildingAI buildingAi = _buildingManager.m_buildings.m_buffer[i].Info.GetComponent<PlayerBuildingAI>();
+                //also mau be used = .Info.GetComponent<PlayerBuildingAI>();
+                var buildingAi = building.Info.m_buildingAI;
+                if (!buildingAi.CanBeEmptied())
+                    continue;
 
                 if (buildingAi is LandfillSiteAI)
                 {
-                    HandleLandfill(i, ref buildingAi);
+                    HandleLandfill(i, ref building);
                 }
                 else if (buildingAi is CemeteryAI)
                 {
-                    HandleCemetery(i, ref buildingAi);
+                    HandleCemetery(i, ref building);
                 }
                 //else if (buildingAi is SnowDumpAI)
                 //{

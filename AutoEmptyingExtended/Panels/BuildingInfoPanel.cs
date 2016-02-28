@@ -25,16 +25,16 @@ namespace AutoEmptyingExtended.Panels
             autoLayoutPadding = new RectOffset(0, 0, 1, 1);
             autoLayoutStart = LayoutStart.TopLeft;
 
-            position = new Vector3(160, 110);
+            position = new Vector3(160, 120);
             width = 400;
             height = 200;
 
             // add sub-components
             _checkbox1 = AddUIComponent<CheckboxSubPanel>();
-            //_checkbox1.Text = "Disable auto emptying for this site";
+            _checkbox1.Text = "Disable auto-emptying";
 
             _checkbox2 = AddUIComponent<CheckboxSubPanel>();
-            //_checkbox2.Text = "Disable the site after emptying";
+            _checkbox2.Text = "Turn off after emptying";
         }
 
         public override void Update()
@@ -49,7 +49,7 @@ namespace AutoEmptyingExtended.Panels
 
                     Debug.Log($"MyPanel {buildingId}");
                     var buildingAi = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId].Info.m_buildingAI;
-                    if (buildingAi is LandfillSiteAI || buildingAi is CemeteryAI)
+                    if (buildingAi.CanBeEmptied() && (buildingAi is LandfillSiteAI || buildingAi is CemeteryAI))
                     {
                         this.isVisible = true;
                         //Do something (update emptying display data)
@@ -58,7 +58,6 @@ namespace AutoEmptyingExtended.Panels
                     {
                         this.isVisible = false;
                     }
-
                 }
             }
 
