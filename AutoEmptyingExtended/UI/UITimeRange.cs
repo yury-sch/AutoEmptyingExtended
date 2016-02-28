@@ -17,7 +17,7 @@ namespace AutoEmptyingExtended.UI
         #endregion
 
         #region Fields
-
+        
         private float _iconWidth;
         private Vector2 _sliderSize;
 
@@ -102,7 +102,8 @@ namespace AutoEmptyingExtended.UI
 
             //slider icon
             var icon = this.AddUIComponent<UISprite>();
-            icon.spriteName = "EmptyIcon";
+            icon.atlas = ResourceManager.Instance.Atlas;
+            icon.spriteName = "ClockIcon";
             icon.size = new Vector2(_iconWidth, _iconWidth);
             icon.position = new Vector3(_padding, 0);
 
