@@ -52,10 +52,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildingDataManager.cs" />
     <Compile Include="UI\EmptyingTool.cs" />
     <Compile Include="UI\ThreadingExtension.cs" />
     <Compile Include="UI\UIEmptyingControl.cs" />
     <Compile Include="EmptyingMonitor.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="ModIdentity.cs" />
     <Compile Include="UI\UICheckboxSubPanel.cs" />
     <Compile Include="UI\UIBuildingInfoPanel.cs" />
