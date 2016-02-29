@@ -13,7 +13,7 @@ namespace AutoEmptyingExtended
         
         private ResourceManager()
         {
-            _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Sprites.";
+            _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Resources.";
 
             _spriteNames = new[] {
                 "ClockIcon"

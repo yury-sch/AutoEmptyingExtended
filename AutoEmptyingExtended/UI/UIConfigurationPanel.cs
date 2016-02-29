@@ -1,17 +1,18 @@
-﻿using AutoEmptyingExtended.UI;
-using ColossalFramework.UI;
+﻿using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended.Panels
+namespace AutoEmptyingExtended.UI
 {
     public class ConfigurationPanel : UIPanel
     {
+        public delegate void EventCloseClickHandler(UIComponent component);
+
+        public event EventCloseClickHandler eventCloseClick;
+
         public override void Start()
         {
             base.Start();
-
-            this.isVisible = false;
-
+            
             this.backgroundSprite = "MenuPanel";
             this.size = new Vector2(350, 300);
             this.absolutePosition = new Vector3(GetUIView().fixedWidth - 70 - this.width, GetUIView().fixedHeight - 130 - this.height);
@@ -35,11 +36,7 @@ namespace AutoEmptyingExtended.Panels
             closeButton.normalBgSprite = "buttonclose";
             closeButton.hoveredFgSprite = "buttonclosehover";
             closeButton.pressedBgSprite = "buttonclosepressed";
-            closeButton.eventButtonStateChanged += (component, state) => 
-            {
-                if (state == UIButton.ButtonState.Pressed)
-                    this.isVisible = false;
-            };
+            closeButton.eventClick += (component, eventParam) => { eventCloseClick?.Invoke(component); };
 
             var uiTimeRangeLandfillSite = this.AddUIComponent<UITimeRange>();
             uiTimeRangeLandfillSite.position = new Vector3(15, -60);

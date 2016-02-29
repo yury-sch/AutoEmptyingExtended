@@ -52,19 +52,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UI\EmptyingTool.cs" />
+    <Compile Include="UI\ThreadingExtension.cs" />
+    <Compile Include="UI\UIEmptyingControl.cs" />
     <Compile Include="EmptyingMonitor.cs" />
     <Compile Include="ModIdentity.cs" />
-    <Compile Include="Panels\CheckboxSubPanel.cs" />
-    <Compile Include="Panels\BuildingInfoPanel.cs" />
+    <Compile Include="UI\UICheckboxSubPanel.cs" />
+    <Compile Include="UI\UIBuildingInfoPanel.cs" />
     <Compile Include="ResourceManager.cs" />
-    <Compile Include="UIInitializer.cs" />
-    <Compile Include="Panels\ConfigurationPanel.cs" />
+    <Compile Include="UI\UILoadingExtension.cs" />
+    <Compile Include="UI\UIConfigurationPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\UITimeRange.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Sprites\ClockIcon.png" />
+    <EmbeddedResource Include="Resources\ClockIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -1,7 +1,7 @@
 ﻿using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended.Panels
+namespace AutoEmptyingExtended.UI
 {
     public class CheckboxSubPanel : UIPanel
     {

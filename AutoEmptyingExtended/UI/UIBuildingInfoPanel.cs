@@ -2,7 +2,7 @@
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended.Panels
+namespace AutoEmptyingExtended.UI
 {
     public class BuildingInfoPanel : UIPanel
     {
