@@ -8,8 +8,8 @@ namespace AutoEmptyingExtended.UI
     {
         #region Components 
 
-        private CheckboxSubPanel _checkbox1;
-        private CheckboxSubPanel _checkbox2;
+        private UICheckboxContainer _checkbox1;
+        private UICheckboxContainer _checkbox2;
 
         #endregion
 
@@ -30,10 +30,10 @@ namespace AutoEmptyingExtended.UI
             height = 200;
 
             // add sub-components
-            _checkbox1 = AddUIComponent<CheckboxSubPanel>();
+            _checkbox1 = AddUIComponent<UICheckboxContainer>();
             _checkbox1.Text = "Disable auto-emptying";
 
-            _checkbox2 = AddUIComponent<CheckboxSubPanel>();
+            _checkbox2 = AddUIComponent<UICheckboxContainer>();
             _checkbox2.Text = "Turn off after emptying";
         }
 

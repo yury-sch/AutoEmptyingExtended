@@ -16,7 +16,8 @@ namespace AutoEmptyingExtended
             _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Resources.";
 
             _spriteNames = new[] {
-                "ClockIcon"
+                "ClockIcon",
+                "DimensionIcon"
                         };
         }
 

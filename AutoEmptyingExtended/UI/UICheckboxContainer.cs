@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace AutoEmptyingExtended.UI
 {
-    public class CheckboxSubPanel : UIPanel
+    public class UICheckboxContainer : UIPanel
     {
-        #region Components 
-
         private UIButton _checkbox;
         private UILabel _description;
-
-        #endregion
-
         private string _text = "<default_text>";
+
+        public UICheckboxContainer()
+        {
+            height = 16;
+        }
 
         public bool Checked
         {
@@ -52,7 +52,6 @@ namespace AutoEmptyingExtended.UI
             base.Start();
 
             // configure panel
-            height = 16;
             width = 400;
             isVisible = true;
             isEnabled = true;
