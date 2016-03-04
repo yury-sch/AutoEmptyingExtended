@@ -2,7 +2,7 @@
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended
+namespace AutoEmptyingExtended.UI
 {
     public class ResourceManager
     {

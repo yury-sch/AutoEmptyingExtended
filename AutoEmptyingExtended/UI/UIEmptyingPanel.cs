@@ -33,6 +33,7 @@ namespace AutoEmptyingExtended.UI
 
             // add sub-components
             _enabledCheckbox = this.AddUIComponent<UICheckboxContainer>();
+            _enabledCheckbox.Text = "AutoEmptying.Enabled".Translate();
             _enabledCheckbox.eventCheckChanged += (component, value) =>
             {
                 if (value != Data.AutoEmptyingEnabled)
