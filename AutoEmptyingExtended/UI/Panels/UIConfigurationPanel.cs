@@ -1,11 +1,10 @@
-﻿using System;
-using AutoEmptyingExtended.Data;
+﻿using AutoEmptyingExtended.Data;
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended.UI
+namespace AutoEmptyingExtended.UI.Panels
 {
-    public abstract class UIEmptyingPanel : UIPanel
+    public abstract class UIConfigurationPanel : UIPanel
     {
         private bool _initialized;
 

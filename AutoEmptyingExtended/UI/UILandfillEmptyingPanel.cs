@@ -1,8 +1,9 @@
 ﻿using AutoEmptyingExtended.Data;
+using AutoEmptyingExtended.UI.Panels;
 
 namespace AutoEmptyingExtended.UI
 {
-    public class UILandfillEmptyingPanel : UIEmptyingPanel
+    public class UILandfillEmptyingPanel : UIConfigurationPanel
     {
         public override void Start()
         {

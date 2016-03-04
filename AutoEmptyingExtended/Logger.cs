@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace AutoEmptyingExtended
 {
@@ -6,9 +7,10 @@ namespace AutoEmptyingExtended
     {
         private const string Prefix = "AutoEmptying Extended: ";
 
-        public static void LogDebug(string message)
+        public static void LogDebug(Func<string> acquire)
         {
         #if DEBUG
+            var message = acquire();
             Debug.Log(Prefix + "(DEBUG) " + message);
         #endif
         }

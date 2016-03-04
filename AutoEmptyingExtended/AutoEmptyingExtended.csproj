@@ -61,12 +61,12 @@
     <Compile Include="UI\LocalizationManager.cs" />
     <Compile Include="UI\UICemetaryEmptyingPanel.cs" />
     <Compile Include="UI\UILandfillEmptyingPanel.cs" />
-    <Compile Include="UI\UIEmptyingPanel.cs" />
+    <Compile Include="UI\Panels\UIConfigurationPanel.cs" />
     <Compile Include="EmptyingMonitor.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ModIdentity.cs" />
     <Compile Include="UI\UICheckboxContainer.cs" />
-    <Compile Include="UI\UIBuildingInfoPanel.cs" />
+    <Compile Include="UI\Panels\UIServiceInfoPanel.cs" />
     <Compile Include="UI\TextureManager.cs" />
     <Compile Include="UI\UILoadingExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

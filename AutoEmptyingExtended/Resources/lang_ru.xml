@@ -6,7 +6,4 @@
   <LocaleResource Name="CityServicePanel.AutoEmptying.Disabled">
     <Value>Выключить авто-очистку</Value>
   </LocaleResource>
-  <LocaleResource Name="CityServicePanel.AutoEmptying.TurnoffWhenDone">
-    <Value>Выключить после очистки</Value>
-  </LocaleResource>
 </Language>

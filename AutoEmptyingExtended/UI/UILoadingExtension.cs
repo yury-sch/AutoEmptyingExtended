@@ -1,4 +1,5 @@
-﻿using ColossalFramework.UI;
+﻿using AutoEmptyingExtended.UI.Panels;
+using ColossalFramework.UI;
 using ICities;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace AutoEmptyingExtended.UI
         {
             //TODO We must to destroy all our own view components after level unloading. I used _bwGameObject container for this.
             var serviceBuildingInfo = UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
-            serviceBuildingInfo.AddUIComponent<UIBuildingInfoPanel>();
+            serviceBuildingInfo.AddUIComponent<UIServiceInfoPanel>();
 
             var garbageInfoViewPanel = UIView.Find<UIPanel>("(Library) GarbageInfoViewPanel");
             garbageInfoViewPanel.AddUIComponent<UILandfillEmptyingPanel>();

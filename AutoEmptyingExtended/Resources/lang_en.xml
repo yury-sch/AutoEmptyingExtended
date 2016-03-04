@@ -6,7 +6,4 @@
   <LocaleResource Name="CityServicePanel.AutoEmptying.Disabled">
     <Value>Disable auto-emptying</Value>
   </LocaleResource>
-  <LocaleResource Name="CityServicePanel.AutoEmptying.TurnoffWhenDone">
-    <Value>Turn off after emptying</Value>
-  </LocaleResource>
 </Language>
