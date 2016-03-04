@@ -19,7 +19,7 @@ namespace AutoEmptyingExtended.UI
         {
             base.Start();
 
-            var resourceManager = ResourceManager.Instance;
+            var resourceManager = TextureManager.Instance;
 
             // configure panel
             this.padding = new RectOffset(10, 10, 5, 10);

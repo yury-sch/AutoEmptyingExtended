@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace AutoEmptyingExtended.UI
 {
-    public class ResourceManager
+    public class TextureManager
     {
-        private static ResourceManager _instance;
+        private static TextureManager _instance;
         private readonly string _assemblyPath;
         private readonly string[] _spriteNames;
         private UITextureAtlas _atlas;
         
-        private ResourceManager()
+        private TextureManager()
         {
             _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Resources.";
 
@@ -21,7 +21,7 @@ namespace AutoEmptyingExtended.UI
                         };
         }
 
-        public static ResourceManager Instance => _instance ?? (_instance = new ResourceManager());
+        public static TextureManager Instance => _instance ?? (_instance = new TextureManager());
 
         public UITextureAtlas Atlas => _atlas ?? (_atlas = CreateTextureAtlas("AutoEmptyingUI", UIView.GetAView().defaultAtlas.material, _spriteNames));
 

@@ -10,21 +10,21 @@ using ColossalFramework.Globalization;
 
 namespace AutoEmptyingExtended.UI
 {
-    public class Localization
+    public class LocalizationManager
     {
         private static readonly string DEFAULT_TRANSLATION_PREFIX = "lang";
 
-        private static Localization _instance;
+        private static LocalizationManager _instance;
         private readonly string _assemblyPath;
         private static Dictionary<string, string> _translations;
 
-        private Localization()
+        private LocalizationManager()
         {
             _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Resources.";
             _translations = LoadTranslations();
         }
 
-        public static Localization Instance => _instance ?? (_instance = new Localization());
+        public static LocalizationManager Instance => _instance ?? (_instance = new LocalizationManager());
         
         private string GetTranslatedFileName(string filenamePrefix)
         {
@@ -135,7 +135,7 @@ namespace AutoEmptyingExtended.UI
     {
         public static string Translate(this String key)
         {
-            var localization = Localization.Instance;
+            var localization = LocalizationManager.Instance;
             return localization.GetString(key);
 
         }

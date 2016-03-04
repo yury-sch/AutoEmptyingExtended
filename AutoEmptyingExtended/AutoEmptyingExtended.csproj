@@ -58,7 +58,7 @@
     <Compile Include="Data\ConfigurationDataContainer.cs" />
     <Compile Include="Data\ConfigurationSerializableData.cs" />
     <Compile Include="Data\BuildingSerializableData.cs" />
-    <Compile Include="UI\Localization.cs" />
+    <Compile Include="UI\LocalizationManager.cs" />
     <Compile Include="UI\UICemetaryEmptyingPanel.cs" />
     <Compile Include="UI\UILandfillEmptyingPanel.cs" />
     <Compile Include="UI\UIEmptyingPanel.cs" />
@@ -67,7 +67,7 @@
     <Compile Include="ModIdentity.cs" />
     <Compile Include="UI\UICheckboxContainer.cs" />
     <Compile Include="UI\UIBuildingInfoPanel.cs" />
-    <Compile Include="UI\ResourceManager.cs" />
+    <Compile Include="UI\TextureManager.cs" />
     <Compile Include="UI\UILoadingExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\UISliderContainer.cs" />
