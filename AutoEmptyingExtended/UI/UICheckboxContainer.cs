@@ -5,12 +5,15 @@ namespace AutoEmptyingExtended.UI
 {
     public class UICheckboxContainer : UIPanel
     {
+        private string _text = "<default_text>";
         private UIButton _checkbox;
         private UILabel _description;
-        private string _text = "<default_text>";
+
+        public event PropertyChangedEventHandler<bool> eventCheckChanged;
 
         public UICheckboxContainer()
         {
+            width = 400;
             height = 16;
         }
 
@@ -33,6 +36,8 @@ namespace AutoEmptyingExtended.UI
                     return;
 
                 _checkbox.normalFgSprite = value ? "check-checked" : "check-unchecked";
+
+                eventCheckChanged?.Invoke(this, value);
             }
         }
 
@@ -52,7 +57,6 @@ namespace AutoEmptyingExtended.UI
             base.Start();
 
             // configure panel
-            width = 400;
             isVisible = true;
             isEnabled = true;
             canFocus = true;

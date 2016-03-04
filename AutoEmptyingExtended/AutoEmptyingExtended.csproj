@@ -52,8 +52,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuildingDataManager.cs" />
-    <Compile Include="UI\UIEmptyingInfoViewPanel.cs" />
+    <Compile Include="Data\BuildingDataContainer.cs" />
+    <Compile Include="Data\ConfigurationDataManager.cs" />
+    <Compile Include="Data\BuildingDataManager.cs" />
+    <Compile Include="Data\ConfigurationDataContainer.cs" />
+    <Compile Include="Data\ConfigurationSerializableData.cs" />
+    <Compile Include="Data\BuildingSerializableData.cs" />
+    <Compile Include="UI\UICemetaryEmptyingPanel.cs" />
+    <Compile Include="UI\UILandfillEmptyingPanel.cs" />
+    <Compile Include="UI\UIEmptyingPanel.cs" />
     <Compile Include="EmptyingMonitor.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ModIdentity.cs" />

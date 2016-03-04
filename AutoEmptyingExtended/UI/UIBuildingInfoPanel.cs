@@ -4,16 +4,12 @@ using UnityEngine;
 
 namespace AutoEmptyingExtended.UI
 {
-    public class BuildingInfoPanel : UIPanel
+    public class UIBuildingInfoPanel : UIPanel
     {
-        #region Components 
+        private int _selectedBuilding;
 
         private UICheckboxContainer _checkbox1;
         private UICheckboxContainer _checkbox2;
-
-        #endregion
-
-        private int _selectedBuilding;
 
         public override void Start()
         {
@@ -47,7 +43,6 @@ namespace AutoEmptyingExtended.UI
                 {
                     _selectedBuilding = buildingId;
 
-                    Debug.Log($"MyPanel {buildingId}");
                     var buildingAi = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId].Info.m_buildingAI;
                     if (buildingAi.CanBeEmptied() && (buildingAi is LandfillSiteAI || buildingAi is CemeteryAI))
                     {

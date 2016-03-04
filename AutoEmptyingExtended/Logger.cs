@@ -4,7 +4,7 @@ namespace AutoEmptyingExtended
 {
     internal static class Logger
     {
-        private const string Prefix = "AEE: ";
+        private const string Prefix = "AutoEmptying Extended: ";
 
         public static void Log(string message, params object[] args)
         {

@@ -13,13 +13,13 @@ namespace AutoEmptyingExtended.UI
         {
             //TODO We must to destroy all our own view components after level unloading. I used _bwGameObject container for this.
             var serviceBuildingInfo = UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
-            serviceBuildingInfo.AddUIComponent<BuildingInfoPanel>();
+            serviceBuildingInfo.AddUIComponent<UIBuildingInfoPanel>();
 
             var garbageInfoViewPanel = UIView.Find<UIPanel>("(Library) GarbageInfoViewPanel");
-            garbageInfoViewPanel.AddUIComponent<UIEmptyingInfoViewPanel>();
+            garbageInfoViewPanel.AddUIComponent<UILandfillEmptyingPanel>();
 
             var healthInfoViewPanel = UIView.Find<UIPanel>("(Library) HealthInfoViewPanel");
-            healthInfoViewPanel.AddUIComponent<UIEmptyingInfoViewPanel>();
+            healthInfoViewPanel.AddUIComponent<UICemetaryEmptyingPanel>();
         }
 
         public override void OnLevelLoaded(LoadMode mode)

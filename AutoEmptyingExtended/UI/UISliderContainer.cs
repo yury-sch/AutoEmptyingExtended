@@ -18,6 +18,7 @@ namespace AutoEmptyingExtended.UI
 
         private float _minValue;
         private float _maxValue;
+        private float _value;
         private float _stepSize;
         private string _valueFormat;
 
@@ -96,13 +97,13 @@ namespace AutoEmptyingExtended.UI
 
         public float Value
         {
-            get { return _slider?.value ?? (_maxValue + _minValue) / 2; }
+            get { return _value; }
             set
             {
-                if (_slider == null || value < _minValue || value > _maxValue)
-                    return;
-                _slider.value = value;
-                _labelValue.text = value.ToString(_valueFormat);
+                if (_slider != null && value >= _minValue && value <= _maxValue)
+                {
+                    _slider.value = value;
+                }
             }
         }
 
@@ -130,6 +131,12 @@ namespace AutoEmptyingExtended.UI
         {
             set { _iconSprite = value; }
         }
+
+        #endregion
+
+        #region Events
+
+        public event PropertyChangedEventHandler<float> eventValueChanged;
 
         #endregion
 
@@ -200,10 +207,22 @@ namespace AutoEmptyingExtended.UI
             //slider
             _slider = CreateSlider(false);
             _slider.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + (_slider.size.y / 2));
-            _slider.eventValueChanged += (component, value) => { Value = value; };
 
             //values
             _slider.value = _maxValue;
+
+            //events
+            _slider.eventValueChanged += (component, value) =>
+            {
+                if (_value != value)
+                {
+                    _value = value;
+                    _slider.value = value;
+                    _labelValue.text = value.ToString(_valueFormat);
+
+                    eventValueChanged?.Invoke(this, value);
+                }
+            };
 
             base.Start();
         }

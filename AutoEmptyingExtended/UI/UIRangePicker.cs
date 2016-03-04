@@ -19,6 +19,8 @@ namespace AutoEmptyingExtended.UI
 
         private float _minValue;
         private float _maxValue;
+        private float _startValue;
+        private float _endValue;
         private float _stepSize;
         private string _valueFormat;
 
@@ -47,6 +49,14 @@ namespace AutoEmptyingExtended.UI
             _stepSize = 1f;
             _valueFormat = "F";
         }
+
+        #endregion
+
+        #region Events
+        
+        public event PropertyChangedEventHandler<float> eventStartValueChanged;
+
+        public event PropertyChangedEventHandler<float> eventEndValueChanged;
 
         #endregion
 
@@ -99,31 +109,27 @@ namespace AutoEmptyingExtended.UI
                 }
             }
         }
-
+        
         public float StartValue
         {
-            get { return _sliderStart?.value ?? _minValue; }
+            get { return _startValue; }
             set
             {
                 if (_sliderStart != null && _sliderEnd != null && value >= _minValue)
                 {
-                    var calcValue = Math.Min(value, _sliderEnd.value - 1);
-                    _sliderStart.value = calcValue;
-                    _labelStart.text = calcValue.ToString(_valueFormat);
+                    _sliderStart.value = value;
                 }
             }
         }
 
         public float EndValue
         {
-            get { return _sliderEnd?.value ?? _maxValue; }
+            get { return _endValue; }
             set
             {
                 if (_sliderStart != null && _sliderEnd != null && value <= _maxValue)
                 {
-                    var calcValue = Math.Max(value, _sliderStart.value + 1);
-                    _sliderEnd.value = calcValue;
-                    _labelEnd.text = calcValue.ToString(_valueFormat);
+                    _sliderEnd.value = value;
                 }
             }
         }
@@ -226,16 +232,52 @@ namespace AutoEmptyingExtended.UI
             //up slider
             _sliderStart = CreateSlider(false);
             _sliderStart.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + _sliderStart.size.y);
-            _sliderStart.eventValueChanged += (component, value) => { StartValue = value; };
 
             //down slider
             _sliderEnd = CreateSlider(true);
             _sliderEnd.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2));
-            _sliderEnd.eventValueChanged += (component, value) => { EndValue = value; };
 
             //values
             _sliderStart.value = _minValue;
             _sliderEnd.value = _maxValue;
+
+            //events
+            _sliderStart.eventValueChanged += (component, value) =>
+            {
+                if (value > _sliderEnd.value - 1)
+                {
+                    _sliderStart.value = _sliderEnd.value - 1;
+                }
+                else
+                {
+                    if (_startValue != value)
+                    {
+                        _startValue = value;
+                        _sliderStart.value = value;
+                        _labelStart.text = value.ToString(_valueFormat);
+
+                        eventStartValueChanged?.Invoke(this, value);
+                    }
+                }
+            };
+            _sliderEnd.eventValueChanged += (component, value) =>
+            {
+                if (value < _sliderStart.value + 1)
+                {
+                    _sliderEnd.value = _sliderStart.value + 1;
+                }
+                else
+                {
+                    if (_endValue != value)
+                    {
+                        _endValue = value;
+                        _sliderEnd.value = value;
+                        _labelEnd.text = value.ToString(_valueFormat);
+
+                        eventEndValueChanged?.Invoke(this, value);
+                    }
+                }
+            };
 
             base.Start();
         }
