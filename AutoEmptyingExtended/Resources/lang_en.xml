@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Language Name="English">
+  <LocaleResource Name="ConfigurationPanel.AutoEmptying.Enabled">
+    <Value>Schedule cleaning</Value>
+  </LocaleResource>
+  <LocaleResource Name="CityServicePanel.AutoEmptying.Disabled">
+    <Value>Disable auto-emptying</Value>
+  </LocaleResource>
+  <LocaleResource Name="CityServicePanel.AutoEmptying.TurnoffWhenDone">
+    <Value>Turn off after emptying</Value>
+  </LocaleResource>
+</Language>

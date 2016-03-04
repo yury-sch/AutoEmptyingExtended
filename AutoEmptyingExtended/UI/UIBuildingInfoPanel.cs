@@ -27,10 +27,10 @@ namespace AutoEmptyingExtended.UI
 
             // add sub-components
             _checkbox1 = AddUIComponent<UICheckboxContainer>();
-            _checkbox1.Text = "Disable auto-emptying";
+            _checkbox1.Text = "CityServicePanel.AutoEmptying.Disabled".Translate();
 
             _checkbox2 = AddUIComponent<UICheckboxContainer>();
-            _checkbox2.Text = "Turn off after emptying";
+            _checkbox2.Text = "CityServicePanel.AutoEmptying.TurnoffWhenDone".Translate();
         }
 
         public override void Update()

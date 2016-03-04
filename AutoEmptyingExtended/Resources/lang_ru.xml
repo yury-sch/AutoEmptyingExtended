@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Language Name="Russia">
+  <LocaleResource Name="ConfigurationPanel.AutoEmptying.Enabled">
+    <Value>Очищать по расписанию</Value>
+  </LocaleResource>
+  <LocaleResource Name="CityServicePanel.AutoEmptying.Disabled">
+    <Value>Выключить авто-очистку</Value>
+  </LocaleResource>
+  <LocaleResource Name="CityServicePanel.AutoEmptying.TurnoffWhenDone">
+    <Value>Выключить после очистки</Value>
+  </LocaleResource>
+</Language>

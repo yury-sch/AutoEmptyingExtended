@@ -6,6 +6,13 @@ namespace AutoEmptyingExtended
     {
         private const string Prefix = "AutoEmptying Extended: ";
 
+        public static void LogDebug(string message)
+        {
+        #if DEBUG
+            Debug.Log(Prefix + "(DEBUG) " + message);
+        #endif
+        }
+
         public static void Log(string message, params object[] args)
         {
             var msg = Prefix + string.Format(message, args);

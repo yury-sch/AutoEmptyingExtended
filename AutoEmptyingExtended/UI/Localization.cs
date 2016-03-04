@@ -39,21 +39,22 @@ namespace AutoEmptyingExtended.UI
             var filenameBuilder = new StringBuilder(filenamePrefix);
             if (language != null)
             {
-                filenameBuilder.Append(".");
+                filenameBuilder.Append("_");
                 filenameBuilder.Append(language.Trim().ToLower());
             }
             filenameBuilder.Append(".xml");
 
             var translatedFilename = filenameBuilder.ToString();
 
-            if (Assembly.GetExecutingAssembly().GetManifestResourceNames().Contains(_assemblyPath + translatedFilename))
+            var assembly = Assembly.GetExecutingAssembly();
+            if (assembly.GetManifestResourceNames().Contains(_assemblyPath + translatedFilename))
             {
                 return translatedFilename;
             }
 
             if (language != null && !"en".Equals(language))
                 Logger.LogWarning($"Translated file {translatedFilename} not found!");
-            return filenamePrefix + ".en.xml";
+            return filenamePrefix + "_en.xml";
         }
 
         private Dictionary<string, string> LoadTranslations()

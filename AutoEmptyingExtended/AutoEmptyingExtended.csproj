@@ -77,15 +77,13 @@
     <EmbeddedResource Include="Resources\DimensionIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ClockIcon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ClockIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\lang.en.xml" />
+    <EmbeddedResource Include="Resources\lang_en.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\lang.ru.xml" />
+    <EmbeddedResource Include="Resources\lang_ru.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
