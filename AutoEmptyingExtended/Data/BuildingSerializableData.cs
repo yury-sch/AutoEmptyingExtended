@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using ColossalFramework;
 using ColossalFramework.IO;
 using ICities;
 
@@ -10,15 +12,28 @@ namespace AutoEmptyingExtended.Data
         private const string DataId = "AEE_BuildingData";
         private const uint DataVersion = 0;
 
-        //public static Dictionary<ushort, BuildingData> Data { private get; set; }
-        
-        //public override void OnCreated(ISerializableData serializableData)
-        //{
-        //    base.OnCreated(serializableData);
+        private BuildingDataContainer[] FilterData(BuildingDataContainer[] data)
+        {
+            var list = new List<ushort>();
+            var buffer = Singleton<BuildingManager>.instance.m_buildings.m_buffer;
+            for (ushort i = 0; i < buffer.Length; i++)
+            {
+                if (buffer[i].m_flags == Building.Flags.None)
+                    continue;
 
-        //    // create new empty data dictionary
-        //    //Data = new Dictionary<ushort, BuildingData>();
-        //}
+                var buildingAi = buffer[i].Info.m_buildingAI;
+                if (!buildingAi.CanBeEmptied())
+                    continue;
+
+                if (buildingAi is LandfillSiteAI || buildingAi is CemeteryAI)
+                {
+                    list.Add(i);
+                }
+            }
+            return data
+                .Where(d => list.Contains(d.BuildingId))
+                .ToArray();
+        }
         
         public override void OnLoadData()
         {
@@ -45,8 +60,10 @@ namespace AutoEmptyingExtended.Data
             base.OnSaveData();
 
             // serialize data to bytes[]
-            var data = BuildingDataManager.Data.Values.ToArray();
-            
+            var data = BuildingDataManager.Data.Values
+                .ToArray();
+            data = FilterData(data);
+
             byte[] bytes;
             using (var stream = new MemoryStream())
             {

@@ -7,7 +7,7 @@ namespace AutoEmptyingExtended.Data
     {
         private static BuildingDataManager _instance;
 
-        private Dictionary<ushort, BuildingDataContainer> _buildingData;
+        private readonly Dictionary<ushort, BuildingDataContainer> _buildingData;
 
         private BuildingDataManager()
         {
