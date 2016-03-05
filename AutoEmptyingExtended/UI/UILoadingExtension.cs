@@ -8,19 +8,20 @@ namespace AutoEmptyingExtended.UI
     public class UILoadingExtension : LoadingExtensionBase
     {
         private LoadMode _mode;
-        private GameObject _bwGameObject;
-        
+        private UIServiceInfoPanel _serviceInfoPanel;
+        private UILandfillEmptyingPanel _landfillEmptyingPanel;
+        private UICemetaryEmptyingPanel _cemetaryEmptyingPanel;
+
         private void InitWindows()
         {
-            //TODO We must to destroy all our own view components after level unloading. I used _bwGameObject container for this.
             var serviceBuildingInfo = UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
-            serviceBuildingInfo.AddUIComponent<UIServiceInfoPanel>();
+            _serviceInfoPanel = serviceBuildingInfo.AddUIComponent<UIServiceInfoPanel>();
 
             var garbageInfoViewPanel = UIView.Find<UIPanel>("(Library) GarbageInfoViewPanel");
-            garbageInfoViewPanel.AddUIComponent<UILandfillEmptyingPanel>();
+            _landfillEmptyingPanel = garbageInfoViewPanel.AddUIComponent<UILandfillEmptyingPanel>();
 
             var healthInfoViewPanel = UIView.Find<UIPanel>("(Library) HealthInfoViewPanel");
-            healthInfoViewPanel.AddUIComponent<UICemetaryEmptyingPanel>();
+            _cemetaryEmptyingPanel = healthInfoViewPanel.AddUIComponent<UICemetaryEmptyingPanel>();
         }
 
         public override void OnLevelLoaded(LoadMode mode)
@@ -29,7 +30,6 @@ namespace AutoEmptyingExtended.UI
                 return;
             _mode = mode;
 
-            _bwGameObject = new GameObject("AUEBuildingWindowObject");
             InitWindows();
         }
 
@@ -38,8 +38,12 @@ namespace AutoEmptyingExtended.UI
             if (_mode != LoadMode.LoadGame && _mode != LoadMode.NewGame)
                 return;
             
-            if (_bwGameObject != null)
-                Object.Destroy(_bwGameObject);
+            if (_serviceInfoPanel != null)
+                Object.Destroy(_serviceInfoPanel);
+            if (_landfillEmptyingPanel != null)
+                Object.Destroy(_landfillEmptyingPanel);
+            if (_cemetaryEmptyingPanel != null)
+                Object.Destroy(_cemetaryEmptyingPanel);
         }
     }
 }
