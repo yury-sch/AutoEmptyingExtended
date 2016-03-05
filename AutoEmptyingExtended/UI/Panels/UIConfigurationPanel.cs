@@ -32,7 +32,6 @@ namespace AutoEmptyingExtended.UI.Panels
 
             // add sub-components
             _enabledCheckbox = this.AddUIComponent<UICheckboxContainer>();
-            _enabledCheckbox.Text = "ConfigurationPanel.AutoEmptying.Enabled".Translate();
             _enabledCheckbox.eventCheckChanged += (component, value) =>
             {
                 if (value != Data.AutoEmptyingEnabled)
@@ -90,6 +89,8 @@ namespace AutoEmptyingExtended.UI.Panels
         public override void Update()
         {
             base.Update();
+
+            _enabledCheckbox.Text = "ConfigurationPanel.AutoEmptying.Enabled".Translate();
 
             if (_initialized)
                 return;

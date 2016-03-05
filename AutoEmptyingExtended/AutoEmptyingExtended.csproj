@@ -59,8 +59,8 @@
     <Compile Include="Data\ConfigurationSerializableData.cs" />
     <Compile Include="Data\BuildingSerializableData.cs" />
     <Compile Include="UI\LocalizationManager.cs" />
-    <Compile Include="UI\UICemetaryEmptyingPanel.cs" />
-    <Compile Include="UI\UILandfillEmptyingPanel.cs" />
+    <Compile Include="UI\Panels\UICemetaryEmptyingPanel.cs" />
+    <Compile Include="UI\Panels\UILandfillEmptyingPanel.cs" />
     <Compile Include="UI\Panels\UIConfigurationPanel.cs" />
     <Compile Include="EmptyingMonitor.cs" />
     <Compile Include="Logger.cs" />

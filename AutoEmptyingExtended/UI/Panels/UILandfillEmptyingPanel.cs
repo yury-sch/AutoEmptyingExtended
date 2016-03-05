@@ -1,7 +1,6 @@
 ﻿using AutoEmptyingExtended.Data;
-using AutoEmptyingExtended.UI.Panels;
 
-namespace AutoEmptyingExtended.UI
+namespace AutoEmptyingExtended.UI.Panels
 {
     public class UILandfillEmptyingPanel : UIConfigurationPanel
     {

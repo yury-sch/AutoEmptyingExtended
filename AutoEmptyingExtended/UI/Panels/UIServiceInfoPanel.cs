@@ -28,7 +28,6 @@ namespace AutoEmptyingExtended.UI.Panels
 
             // add sub-components
             _autoEmptyingCheckbox = AddUIComponent<UICheckboxContainer>();
-            _autoEmptyingCheckbox.Text = "CityServicePanel.AutoEmptying.Disabled".Translate();
             _autoEmptyingCheckbox.eventCheckChanged += (component, value) =>
             {
                 if (_selectedBuilding == 0)
@@ -48,6 +47,10 @@ namespace AutoEmptyingExtended.UI.Panels
 
         public override void Update()
         {
+            base.Update();
+
+            _autoEmptyingCheckbox.Text = "CityServicePanel.AutoEmptying.Disabled".Translate();
+
             var instanceId = WorldInfoPanel.GetCurrentInstanceID();
             if (instanceId.Type == InstanceType.Building && instanceId.Building != 0)
             {
@@ -71,8 +74,6 @@ namespace AutoEmptyingExtended.UI.Panels
                     }
                 }
             }
-
-            base.Update();
         }
     }
 }

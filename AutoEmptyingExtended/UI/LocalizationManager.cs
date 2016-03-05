@@ -15,20 +15,31 @@ namespace AutoEmptyingExtended.UI
         private static readonly string DEFAULT_TRANSLATION_PREFIX = "lang";
 
         private static LocalizationManager _instance;
+        private static string _language = null;
         private readonly string _assemblyPath;
         private static Dictionary<string, string> _translations;
 
-        private LocalizationManager()
+        private LocalizationManager(string language)
         {
             _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Resources.";
-            _translations = LoadTranslations();
+            _translations = LoadTranslations(language);
+            _language = language;
         }
 
-        public static LocalizationManager Instance => _instance ?? (_instance = new LocalizationManager());
-        
-        private string GetTranslatedFileName(string filenamePrefix)
+        public static LocalizationManager Instance
         {
-            var language = LocaleManager.instance.language;
+            get
+            {
+                if (_language != LocaleManager.instance.language || _instance == null)
+                {
+                    _instance = new LocalizationManager(LocaleManager.instance.language);
+                }
+                return _instance;
+            }
+        }
+        
+        private string GetTranslatedFileName(string filenamePrefix, string language)
+        {
             switch (language)
             {
                 case "jaex":
@@ -57,12 +68,12 @@ namespace AutoEmptyingExtended.UI
             return filenamePrefix + "_en.xml";
         }
 
-        private Dictionary<string, string> LoadTranslations()
+        private Dictionary<string, string> LoadTranslations(string language)
         {
             var translations = new Dictionary<string, string>();
             try
             {
-                var filename = _assemblyPath + GetTranslatedFileName(DEFAULT_TRANSLATION_PREFIX);
+                var filename = _assemblyPath + GetTranslatedFileName(DEFAULT_TRANSLATION_PREFIX, language);
                 string xml;
                 using (var rs = Assembly.GetExecutingAssembly().GetManifestResourceStream(filename))
                 {
