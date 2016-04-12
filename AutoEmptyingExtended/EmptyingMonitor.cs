@@ -65,6 +65,7 @@ namespace AutoEmptyingExtended
             var amount = GetAmount(ref building);
             var capacity = GetCapacity(ref building);
             var percentage = ((float)amount / capacity) * 100;
+            var canBeE = CanBeEmptied(buildingId, ref building);
 
             if (configuration.AutoEmptyingEnabled
                 && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None
@@ -72,7 +73,8 @@ namespace AutoEmptyingExtended
                 && !serviceData.AutoEmptyingDisabled 
                 && percentage >= configuration.EmptyingPercentStart
                 && currentTime >= configuration.EmptyingTimeStart
-                && currentTime < configuration.EmptyingTimeEnd)
+                && currentTime < configuration.EmptyingTimeEnd
+                && canBeE)
             {
                 buildingAi.SetEmptying(buildingId, ref building, true);
                 serviceData.StartedAutomatically = true;
@@ -89,7 +91,8 @@ namespace AutoEmptyingExtended
             else if (!configuration.AutoEmptyingEnabled
                 || serviceData.AutoEmptyingDisabled
                 || amount == 0
-                || currentTime >= configuration.EmptyingTimeEnd - 0.01)
+                || currentTime >= configuration.EmptyingTimeEnd - 0.01
+                || !canBeE)
             {
                 if (serviceData.StartedAutomatically
                     && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.Downgrading)
@@ -99,14 +102,72 @@ namespace AutoEmptyingExtended
                 serviceData.StartedAutomatically = false;
             }
         }
-       
+
+        public bool CanBeEmptied(ushort buildingId, ref Building data)
+        {
+            var ai = data.Info.m_buildingAI;
+
+            var serviceBuildings = _buildingManager.GetServiceBuildings(ai.m_info.m_class.m_service);
+            
+            if (serviceBuildings.m_buffer == null || serviceBuildings.m_size > serviceBuildings.m_buffer.Length)
+                return false;
+
+            for (var index = 0; index < serviceBuildings.m_size; ++index)
+            {
+                var serviceBuildingId = serviceBuildings.m_buffer[index];
+                if (serviceBuildingId != 0 && serviceBuildingId != buildingId)
+                {
+                    var sInfo = _buildingManager.m_buildings.m_buffer[serviceBuildingId].Info;
+                    if (sInfo.m_class.m_service == ai.m_info.m_class.m_service &&
+                        sInfo.m_class.m_level == ai.m_info.m_class.m_level &&
+                        ((_buildingManager.m_buildings.m_buffer[serviceBuildingId].m_flags & Building.Flags.Active) != Building.Flags.None &&
+                         _buildingManager.m_buildings.m_buffer[serviceBuildingId].m_productionRate != 0) &&
+                        !sInfo.m_buildingAI.IsFull(serviceBuildingId,
+                            ref _buildingManager.m_buildings.m_buffer[serviceBuildingId]))
+                    {
+                        var siteAI = sInfo.m_buildingAI as LandfillSiteAI;
+                        if (siteAI != null && siteAI.m_electricityProduction > 0)
+                            return true;
+                        var cemeteryAI = sInfo.m_buildingAI as CemeteryAI;
+                        if (cemeteryAI != null && cemeteryAI.m_graveCount == 0)
+                            return true;
+                    }
+
+                }
+            }
+            return false;
+        }
+
         #endregion
 
         #region Methods
-            
+
         public override void OnAfterSimulationTick()
         {
             var buffer = _buildingManager.m_buildings.m_buffer;
+            var temp = 0;
+            for (ushort i = 0; i < buffer.Length; i++)
+            {
+                if (buffer[i].m_flags == Building.Flags.None)
+                    continue;
+
+                var buildingAi = buffer[i].Info.m_buildingAI;
+                if (buildingAi is LandfillSiteAI)
+                {
+                    Logger.LogDebug(() =>
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine($"id = {i}");
+                        sb.AppendLine($".m_garbageConsumption > 0 ?: {(buildingAi as LandfillSiteAI).m_garbageConsumption > 0}");
+                        return sb.ToString();
+                    });
+                    
+                    temp++;
+                    //LandfillSiteAI asfa = buildingAi as LandfillSiteAI;
+                }
+            }
+            
+
             for (ushort i = 0; i < buffer.Length; i++)
             {
                 if (buffer[i].m_flags == Building.Flags.None)
