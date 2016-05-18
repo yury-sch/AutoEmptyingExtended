@@ -1,4 +1,5 @@
 ﻿using AutoEmptyingExtended.Data;
+using AutoEmptyingExtended.UI.Localization;
 using ColossalFramework;
 using ColossalFramework.UI;
 using UnityEngine;
@@ -11,6 +12,11 @@ namespace AutoEmptyingExtended.UI.Panels
 
         private UICheckboxContainer _autoEmptyingCheckbox;
         //private UICheckboxContainer _autoFillingCheckbox;
+
+        private void SetLocales()
+        {
+            _autoEmptyingCheckbox.Text = "CityServicePanel.AutoEmptying.Disabled".Translate();
+        }
 
         public override void Start()
         {
@@ -43,14 +49,15 @@ namespace AutoEmptyingExtended.UI.Panels
             //        return;
             //    BuildingDataManager.Data[_selectedBuilding].AutoFillingDisabled = value;
             //};
+
+            SetLocales();
+            LocalizationManager.Instance.EventLocaleChanged += language => SetLocales();
         }
 
         public override void Update()
         {
             base.Update();
-
-            _autoEmptyingCheckbox.Text = "CityServicePanel.AutoEmptying.Disabled".Translate();
-
+            
             var instanceId = WorldInfoPanel.GetCurrentInstanceID();
             if (instanceId.Type == InstanceType.Building && instanceId.Building != 0)
             {

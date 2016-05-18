@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using ColossalFramework.UI;
 using UnityEngine;
 
@@ -115,6 +116,16 @@ namespace AutoEmptyingExtended.UI
             get { return _startValue; }
             set
             {
+                Logger.LogDebug(() =>
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine($"StartValue: {value}");
+                    sb.AppendLine($"_sliderStart != null: {_sliderStart != null}");
+                    sb.AppendLine($"_sliderEnd != null: {_sliderEnd != null}");
+                    sb.AppendLine($"value >= _minValue: {value >= _minValue}");
+                    return sb.ToString();
+
+                });
                 if (_sliderStart != null && _sliderEnd != null && value >= _minValue)
                 {
                     _sliderStart.value = value;
@@ -127,6 +138,16 @@ namespace AutoEmptyingExtended.UI
             get { return _endValue; }
             set
             {
+                Logger.LogDebug(() =>
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine($"EndValue: {value}");
+                    sb.AppendLine($"_sliderStart != null: {_sliderStart != null}");
+                    sb.AppendLine($"_sliderEnd != null: {_sliderEnd != null}");
+                    sb.AppendLine($"value <= _maxValue: {value <= _maxValue}");
+                    return sb.ToString();
+
+                });
                 if (_sliderStart != null && _sliderEnd != null && value <= _maxValue)
                 {
                     _sliderEnd.value = value;

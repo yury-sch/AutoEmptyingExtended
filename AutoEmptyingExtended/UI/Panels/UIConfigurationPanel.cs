@@ -1,4 +1,5 @@
 ﻿using AutoEmptyingExtended.Data;
+using AutoEmptyingExtended.UI.Localization;
 using ColossalFramework.UI;
 using UnityEngine;
 
@@ -13,7 +14,12 @@ namespace AutoEmptyingExtended.UI.Panels
         private UIRangePicker _timeRange;
 
         protected ConfigurationDataContainer Data;
-        
+
+        private void SetLocales()
+        {
+            _enabledCheckbox.Text = "ConfigurationPanel.AutoEmptying.Enabled".Translate();
+        }
+
         public override void Start()
         {
             base.Start();
@@ -84,13 +90,14 @@ namespace AutoEmptyingExtended.UI.Panels
                 + _enabledCheckbox.height + this.autoLayoutPadding.vertical
                 + _percentSlider.height + this.autoLayoutPadding.vertical
                 + _timeRange.height + this.autoLayoutPadding.vertical;
+
+            SetLocales();
+            LocalizationManager.Instance.EventLocaleChanged += language => SetLocales();
         }
 
         public override void Update()
         {
             base.Update();
-
-            _enabledCheckbox.Text = "ConfigurationPanel.AutoEmptying.Enabled".Translate();
 
             if (_initialized)
                 return;

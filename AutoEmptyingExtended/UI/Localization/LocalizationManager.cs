@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
 using ColossalFramework.Globalization;
 
-namespace AutoEmptyingExtended.UI
+namespace AutoEmptyingExtended.UI.Localization
 {
     public class LocalizationManager
     {
@@ -19,20 +18,25 @@ namespace AutoEmptyingExtended.UI
         private readonly string _assemblyPath;
         private static Dictionary<string, string> _translations;
 
-        private LocalizationManager(string language)
+        private LocalizationManager()
         {
             _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Resources.";
-            _translations = LoadTranslations(language);
-            _language = language;
+            _translations = new Dictionary<string, string>();
+
+            LoadTranslations(LocaleManager.instance.language);
         }
+
+        public delegate void LocaleChangedEventHandler(string language);
+
+        public event LocaleChangedEventHandler EventLocaleChanged;
 
         public static LocalizationManager Instance
         {
             get
             {
-                if (_language != LocaleManager.instance.language || _instance == null)
+                if (_instance == null)
                 {
-                    _instance = new LocalizationManager(LocaleManager.instance.language);
+                    _instance = new LocalizationManager();
                 }
                 return _instance;
             }
@@ -68,9 +72,10 @@ namespace AutoEmptyingExtended.UI
             return filenamePrefix + "_en.xml";
         }
 
-        private Dictionary<string, string> LoadTranslations(string language)
+        private void LoadTranslations(string language)
         {
-            var translations = new Dictionary<string, string>();
+            _language = language;
+            _translations.Clear();
             try
             {
                 var filename = _assemblyPath + GetTranslatedFileName(DEFAULT_TRANSLATION_PREFIX, language);
@@ -96,14 +101,15 @@ namespace AutoEmptyingExtended.UI
                     if (valueNode != null)
                         value = valueNode.InnerText;
 
-                    translations.Add(name, value);
+                    _translations.Add(name, value);
                 }
+                Logger.LogDebug(() => $"{filename} translations loaded.");
+                EventLocaleChanged?.Invoke(language);
             }
             catch (Exception e)
             {
                 Logger.LogError($"Error while loading translations: {e}");
             }
-            return translations;
         }
 
         public string GetString(string key)
@@ -123,32 +129,12 @@ namespace AutoEmptyingExtended.UI
             return ret;
         }
 
-        internal static int GetMenuWidth()
+        public void CheckAndUpdateLocales()
         {
-            switch (LocaleManager.instance.language)
+            if (LocaleManager.instance.language != _language)
             {
-                case null:
-                case "en":
-                case "de":
-                default:
-                    return 210;
-                case "ru":
-                case "pl":
-                    return 250;
-                case "pr":
-                case "fr":
-                    return 230;
+                LoadTranslations(LocaleManager.instance.language);
             }
-        }
-    }
-
-    public static class LocalizationExtensions
-    {
-        public static string Translate(this String key)
-        {
-            var localization = LocalizationManager.Instance;
-            return localization.GetString(key);
-
         }
     }
 }

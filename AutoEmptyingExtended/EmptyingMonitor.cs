@@ -55,7 +55,85 @@ namespace AutoEmptyingExtended
             return capacity;
         }
 
-        private void HandleEmptyingService(ushort buildingId, ref Building building, ConfigurationDataContainer configuration)
+        //private bool CanBeEmptied(ushort buildingId, ref Building data)
+        //{
+        //    var ai = data.Info.m_buildingAI;
+
+        //    var serviceBuildings = _buildingManager.GetServiceBuildings(ai.m_info.m_class.m_service);
+
+        //    if (serviceBuildings.m_buffer == null || serviceBuildings.m_size > serviceBuildings.m_buffer.Length)
+        //        return false;
+
+        //    for (var index = 0; index < serviceBuildings.m_size; ++index)
+        //    {
+        //        var serviceBuildingId = serviceBuildings.m_buffer[index];
+        //        if (serviceBuildingId != 0 && serviceBuildingId != buildingId)
+        //        {
+        //            var sInfo = _buildingManager.m_buildings.m_buffer[serviceBuildingId].Info;
+
+        //            //Logger.LogDebug(() =>
+        //            //{
+        //            //    return $"{sInfo.m_class.m_level}";
+        //            //});
+
+        //            if (sInfo.m_class.m_service == ai.m_info.m_class.m_service &&
+        //                sInfo.m_class.m_level == ai.m_info.m_class.m_level &&
+        //                ((_buildingManager.m_buildings.m_buffer[serviceBuildingId].m_flags & Building.Flags.Active) != Building.Flags.None &&
+        //                 _buildingManager.m_buildings.m_buffer[serviceBuildingId].m_productionRate != 0) &&
+        //                !sInfo.m_buildingAI.IsFull(serviceBuildingId,
+        //                    ref _buildingManager.m_buildings.m_buffer[serviceBuildingId]))
+        //            {
+        //                var siteAI = sInfo.m_buildingAI as LandfillSiteAI;
+        //                if (siteAI != null && siteAI.m_electricityProduction > 0)
+        //                    return true;
+        //                var cemeteryAI = sInfo.m_buildingAI as CemeteryAI;
+        //                if (cemeteryAI != null && cemeteryAI.m_graveCount == 0)
+        //                    return true;
+        //            }
+
+        //        }
+        //    }
+        //    return false;
+        //}
+        
+        private bool CanBeEmptied(ItemClass.Service serviceType)
+        {
+            var serviceBuildings = _buildingManager.GetServiceBuildings(serviceType);
+
+            if (serviceBuildings.m_buffer == null || serviceBuildings.m_size > serviceBuildings.m_buffer.Length)
+                return false;
+
+            for (var index = 0; index < serviceBuildings.m_size; ++index)
+            {
+                var serviceBuildingId = serviceBuildings.m_buffer[index];
+                if (serviceBuildingId == 0) continue;
+
+                var sInfo = _buildingManager.m_buildings.m_buffer[serviceBuildingId].Info;
+
+                if ((_buildingManager.m_buildings.m_buffer[serviceBuildingId].m_flags & Building.Flags.Active) ==
+                    Building.Flags.None ||
+                    _buildingManager.m_buildings.m_buffer[serviceBuildingId].m_productionRate == 0 ||
+                    sInfo.m_buildingAI.IsFull(serviceBuildingId,
+                        ref _buildingManager.m_buildings.m_buffer[serviceBuildingId])) continue;
+
+                switch (serviceType)
+                {
+                    case ItemClass.Service.Garbage:
+                        var siteAI = sInfo.m_buildingAI as LandfillSiteAI;
+                        if (siteAI != null && siteAI.m_electricityProduction > 0)
+                            return true;
+                        break;
+                    case ItemClass.Service.HealthCare:
+                        var cemeteryAI = sInfo.m_buildingAI as CemeteryAI;
+                        if (cemeteryAI != null && cemeteryAI.m_graveCount == 0)
+                            return true;
+                        break;
+                }
+            }
+            return false;
+        }
+
+        private void HandleEmptyingService(ushort buildingId, ref Building building, ConfigurationDataContainer configuration, bool canBeEmptied)
         {
             var buildingAi = building.Info.m_buildingAI;
 
@@ -65,7 +143,6 @@ namespace AutoEmptyingExtended
             var amount = GetAmount(ref building);
             var capacity = GetCapacity(ref building);
             var percentage = ((float)amount / capacity) * 100;
-            var canBeE = CanBeEmptied(buildingId, ref building);
 
             if (configuration.AutoEmptyingEnabled
                 && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None
@@ -74,7 +151,7 @@ namespace AutoEmptyingExtended
                 && percentage >= configuration.EmptyingPercentStart
                 && currentTime >= configuration.EmptyingTimeStart
                 && currentTime < configuration.EmptyingTimeEnd
-                && canBeE)
+                && canBeEmptied)
             {
                 buildingAi.SetEmptying(buildingId, ref building, true);
                 serviceData.StartedAutomatically = true;
@@ -92,7 +169,7 @@ namespace AutoEmptyingExtended
                 || serviceData.AutoEmptyingDisabled
                 || amount == 0
                 || currentTime >= configuration.EmptyingTimeEnd - 0.01
-                || !canBeE)
+                || !canBeEmptied)
             {
                 if (serviceData.StartedAutomatically
                     && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.Downgrading)
@@ -103,87 +180,31 @@ namespace AutoEmptyingExtended
             }
         }
 
-        public bool CanBeEmptied(ushort buildingId, ref Building data)
-        {
-            var ai = data.Info.m_buildingAI;
-
-            var serviceBuildings = _buildingManager.GetServiceBuildings(ai.m_info.m_class.m_service);
-            
-            if (serviceBuildings.m_buffer == null || serviceBuildings.m_size > serviceBuildings.m_buffer.Length)
-                return false;
-
-            for (var index = 0; index < serviceBuildings.m_size; ++index)
-            {
-                var serviceBuildingId = serviceBuildings.m_buffer[index];
-                if (serviceBuildingId != 0 && serviceBuildingId != buildingId)
-                {
-                    var sInfo = _buildingManager.m_buildings.m_buffer[serviceBuildingId].Info;
-                    if (sInfo.m_class.m_service == ai.m_info.m_class.m_service &&
-                        sInfo.m_class.m_level == ai.m_info.m_class.m_level &&
-                        ((_buildingManager.m_buildings.m_buffer[serviceBuildingId].m_flags & Building.Flags.Active) != Building.Flags.None &&
-                         _buildingManager.m_buildings.m_buffer[serviceBuildingId].m_productionRate != 0) &&
-                        !sInfo.m_buildingAI.IsFull(serviceBuildingId,
-                            ref _buildingManager.m_buildings.m_buffer[serviceBuildingId]))
-                    {
-                        var siteAI = sInfo.m_buildingAI as LandfillSiteAI;
-                        if (siteAI != null && siteAI.m_electricityProduction > 0)
-                            return true;
-                        var cemeteryAI = sInfo.m_buildingAI as CemeteryAI;
-                        if (cemeteryAI != null && cemeteryAI.m_graveCount == 0)
-                            return true;
-                    }
-
-                }
-            }
-            return false;
-        }
-
         #endregion
 
         #region Methods
 
         public override void OnAfterSimulationTick()
         {
+            var lCanBeEmptied = CanBeEmptied(ItemClass.Service.Garbage);
+            var cCanBeEmptied = CanBeEmptied(ItemClass.Service.HealthCare);
+
             var buffer = _buildingManager.m_buildings.m_buffer;
-            var temp = 0;
             for (ushort i = 0; i < buffer.Length; i++)
             {
                 if (buffer[i].m_flags == Building.Flags.None)
                     continue;
 
-                var buildingAi = buffer[i].Info.m_buildingAI;
-                if (buildingAi is LandfillSiteAI)
-                {
-                    Logger.LogDebug(() =>
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine($"id = {i}");
-                        sb.AppendLine($".m_garbageConsumption > 0 ?: {(buildingAi as LandfillSiteAI).m_garbageConsumption > 0}");
-                        return sb.ToString();
-                    });
-                    
-                    temp++;
-                    //LandfillSiteAI asfa = buildingAi as LandfillSiteAI;
-                }
-            }
-            
-
-            for (ushort i = 0; i < buffer.Length; i++)
-            {
-                if (buffer[i].m_flags == Building.Flags.None)
+                if (!buffer[i].Info.m_buildingAI.CanBeEmptied())
                     continue;
 
-                var buildingAi = buffer[i].Info.m_buildingAI;
-                if (!buildingAi.CanBeEmptied())
-                    continue;
-
-                if (buildingAi is LandfillSiteAI)
+                if (buffer[i].Info.m_buildingAI is LandfillSiteAI)
                 {
-                    HandleEmptyingService(i, ref buffer[i], _confidurationManager.Landfill);
+                    HandleEmptyingService(i, ref buffer[i], _confidurationManager.Landfill, lCanBeEmptied);
                 }
-                else if (buildingAi is CemeteryAI)
+                else if (buffer[i].Info.m_buildingAI is CemeteryAI)
                 {
-                    HandleEmptyingService(i, ref buffer[i], _confidurationManager.Cemetary);
+                    HandleEmptyingService(i, ref buffer[i], _confidurationManager.Cemetary, cCanBeEmptied);
                 }
             }
 
