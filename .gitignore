@@ -287,9 +287,3 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
-
-
-
-# Custom
-!libs/Cities_Skylines/*
-.vs/config/applicationhost.config
