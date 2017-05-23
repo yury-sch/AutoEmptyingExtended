@@ -17,10 +17,10 @@ namespace AutoEmptyingExtended.Data
             if (bytes == null)
                 return new ConfigurationDataContainer
                 {
-                    AutoEmptyingEnabled = false,
+                    AutoEmptyingEnabled = true,
                     EmptyingPercentStart = 90,
-                    EmptyingTimeStart = 3,
-                    EmptyingTimeEnd = 6
+                    EmptyingTimeStart = 0,
+                    EmptyingTimeEnd = 24
                 };
 
             using (var stream = new MemoryStream(bytes))

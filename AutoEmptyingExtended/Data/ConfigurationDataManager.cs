@@ -3,19 +3,17 @@
     public class ConfigurationDataManager
     {
         private static ConfigurationDataManager _instance;
-        private ConfigurationDataContainer _landfill;
-        private ConfigurationDataContainer _cemetary;
 
         private ConfigurationDataManager()
         {
-            _landfill = new ConfigurationDataContainer();
-            _cemetary = new ConfigurationDataContainer();
+            Landfill = new ConfigurationDataContainer();
+            Cemetary = new ConfigurationDataContainer();
         }
 
         public static ConfigurationDataManager Data => _instance ?? (_instance = new ConfigurationDataManager());
 
-        public ConfigurationDataContainer Landfill { get { return _landfill; } set { _landfill = value; } }
+        public ConfigurationDataContainer Landfill { get; set; }
 
-        public ConfigurationDataContainer Cemetary { get { return _cemetary; } set { _cemetary = value; } }
+        public ConfigurationDataContainer Cemetary { get; set; }
     }
 }
