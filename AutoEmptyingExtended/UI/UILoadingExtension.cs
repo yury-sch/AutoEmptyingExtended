@@ -1,7 +1,8 @@
-﻿using AutoEmptyingExtended.UI.Panels;
+﻿using System.Linq;
+using AutoEmptyingExtended.UI.Panels;
+using AutoEmptyingExtended.Utils;
 using ColossalFramework.UI;
 using ICities;
-using UnityEngine;
 
 namespace AutoEmptyingExtended.UI
 {
@@ -12,15 +13,34 @@ namespace AutoEmptyingExtended.UI
         private UILandfillEmptyingPanel _landfillEmptyingPanel;
         private UICemetaryEmptyingPanel _cemetaryEmptyingPanel;
 
+        #region Auxilary methods
+
+        private static UIPanel FindUIPanel(string name)
+        {
+            var panelInfo = UIView.library.m_DynamicPanels.FirstOrDefault(e => e.name == name && e.instance is UIPanel);
+            return panelInfo?.instance as UIPanel;
+        }
+
+        #endregion
+
         private void InitWindows()
         {
-            var serviceBuildingInfo = UIView.Find<UIPanel>("(Library) CityServiceWorldInfoPanel");
-            _serviceInfoPanel = serviceBuildingInfo.AddUIComponent<UIServiceInfoPanel>();
+            // Add UIServiceInfoPanel to landfill site and cemetry panels
+            var cityServiceWorldInfoPanel = FindUIPanel("CityServiceWorldInfoPanel");
+            if (cityServiceWorldInfoPanel == null) throw new DetailedException($"Failed to find {nameof(cityServiceWorldInfoPanel)}");
 
-            var garbageInfoViewPanel = UIView.Find<UIPanel>("(Library) GarbageInfoViewPanel");
+            _serviceInfoPanel = cityServiceWorldInfoPanel.AddUIComponent<UIServiceInfoPanel>();
+
+            // Add UILandfillEmptyingPanel to garbage configuration panel
+            var garbageInfoViewPanel = FindUIPanel("GarbageInfoViewPanel");
+            if (garbageInfoViewPanel == null) throw new DetailedException($"Failed to find {nameof(garbageInfoViewPanel)}");
+
             _landfillEmptyingPanel = garbageInfoViewPanel.AddUIComponent<UILandfillEmptyingPanel>();
 
-            var healthInfoViewPanel = UIView.Find<UIPanel>("(Library) HealthInfoViewPanel");
+            // Add UILandfillEmptyingPanel to health configuration panel
+            var healthInfoViewPanel = FindUIPanel("HealthInfoViewPanel");
+            if (healthInfoViewPanel == null) throw new DetailedException($"Failed to find {nameof(healthInfoViewPanel)}");
+
             _cemetaryEmptyingPanel = healthInfoViewPanel.AddUIComponent<UICemetaryEmptyingPanel>();
         }
 
@@ -28,6 +48,7 @@ namespace AutoEmptyingExtended.UI
         {
             if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame)
                 return;
+
             _mode = mode;
 
             InitWindows();
@@ -39,11 +60,11 @@ namespace AutoEmptyingExtended.UI
                 return;
             
             if (_serviceInfoPanel != null)
-                Object.Destroy(_serviceInfoPanel);
+                UnityEngine.Object.Destroy(_serviceInfoPanel);
             if (_landfillEmptyingPanel != null)
-                Object.Destroy(_landfillEmptyingPanel);
+                UnityEngine.Object.Destroy(_landfillEmptyingPanel);
             if (_cemetaryEmptyingPanel != null)
-                Object.Destroy(_cemetaryEmptyingPanel);
+                UnityEngine.Object.Destroy(_cemetaryEmptyingPanel);
         }
     }
 }
