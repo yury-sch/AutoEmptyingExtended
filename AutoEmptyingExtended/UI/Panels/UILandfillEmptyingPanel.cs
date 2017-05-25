@@ -4,11 +4,11 @@ namespace AutoEmptyingExtended.UI.Panels
 {
     public class UILandfillEmptyingPanel : UIConfigurationPanel
     {
-        public override void Start()
+        public override void Awake()
         {
-            this.Data = ConfigurationDataManager.Data.Landfill;
+            Data = ConfigurationDataManager.Data.Landfill;
 
-            base.Start();
+            base.Awake();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using AutoEmptyingExtended.Utils;
 using ColossalFramework.UI;
 using UnityEngine;
 
@@ -34,6 +33,7 @@ namespace AutoEmptyingExtended.UI
         private UISlider _sliderEnd;
         private UILabel _labelStart;
         private UILabel _labelEnd;
+        private UIPanel _sliderLine;
 
         #endregion
 
@@ -65,13 +65,11 @@ namespace AutoEmptyingExtended.UI
 
         public float MinValue
         {
-            get
-            {
-                return _minValue;
-            }
+            get => _minValue;
             set
             {
                 _minValue = value;
+
                 if (_sliderStart != null && _sliderEnd != null)
                 {
                     _sliderStart.minValue = value;
@@ -79,16 +77,13 @@ namespace AutoEmptyingExtended.UI
                 }
             }
         }
-
         public float MaxValue
         {
-            get
-            {
-                return _maxValue;
-            }
+            get => _maxValue;
             set
             {
                 _maxValue = value;
+
                 if (_sliderStart != null && _sliderEnd != null)
                 {
                     _sliderStart.maxValue = value;
@@ -99,10 +94,11 @@ namespace AutoEmptyingExtended.UI
 
         public float StepSize
         {
-            get { return _stepSize; }
+            get => _stepSize;
             set
             {
                 _stepSize = value;
+
                 if (_sliderStart != null && _sliderEnd != null)
                 {
                     _sliderStart.stepSize = _stepSize;
@@ -113,79 +109,72 @@ namespace AutoEmptyingExtended.UI
         
         public float StartValue
         {
-            get { return _startValue; }
+            get => _startValue;
             set
             {
-                Logger.LogDebug(() =>
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"StartValue: {value}");
-                    sb.AppendLine($"_sliderStart != null: {_sliderStart != null}");
-                    sb.AppendLine($"_sliderEnd != null: {_sliderEnd != null}");
-                    sb.AppendLine($"value >= _minValue: {value >= _minValue}");
-                    return sb.ToString();
+                if (value < _minValue || value > _maxValue)
+                    throw new DetailedException($"{nameof(UIRangePicker)}: {nameof(StartValue)} < {nameof(MinValue)}");
 
-                });
-                if (_sliderStart != null && _sliderEnd != null && value >= _minValue)
-                {
-                    _sliderStart.value = value;
-                }
+                _startValue = value;
+                UpdateUI();
             }
         }
-
         public float EndValue
         {
-            get { return _endValue; }
+            get => _endValue;
             set
             {
-                Logger.LogDebug(() =>
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine($"EndValue: {value}");
-                    sb.AppendLine($"_sliderStart != null: {_sliderStart != null}");
-                    sb.AppendLine($"_sliderEnd != null: {_sliderEnd != null}");
-                    sb.AppendLine($"value <= _maxValue: {value <= _maxValue}");
-                    return sb.ToString();
+                if (value < _minValue || value > _maxValue)
+                    throw new DetailedException($"{nameof(UIRangePicker)}: {nameof(StartValue)} < {nameof(MinValue)}");
 
-                });
-                if (_sliderStart != null && _sliderEnd != null && value <= _maxValue)
-                {
-                    _sliderEnd.value = value;
-                }
+                _endValue = value;
+                UpdateUI();
             }
         }
 
         public string ValueFormat
         {
-            get { return _valueFormat; }
+            get => _valueFormat;
             set
             {
                 _valueFormat = value;
-
-                //update labels
-                if (_sliderStart != null && _sliderEnd != null)
-                {
-                    StartValue = _sliderStart.value;
-                    EndValue = _sliderEnd.value;
-                }
+                UpdateUI();
             }
         }
 
+
         public UITextureAtlas IconAtlas
         {
-            set { _iconAtlas = value; }
+            set => _iconAtlas = value;
         }
-
         public string IconSprite
         {
-            set { _iconSprite = value; }
+            set => _iconSprite = value;
         }
 
         #endregion
 
         #region Utilities
 
-        private UISlider CreateSlider(bool invert)
+        private void UpdateUI()
+        {
+            if (_sliderStart != null && _labelStart != null)
+            {
+                Logger.LogInGame($"UPDATED WITH {_startValue}");
+
+                _sliderStart.value = _startValue;
+                _labelStart.text = _startValue.ToString(_valueFormat);
+            }
+
+            if (_sliderEnd != null && _labelEnd != null)
+            {
+                Logger.LogInGame($"UPDATED WITH {_endValue}");
+                _sliderEnd.value = _endValue;
+                _labelEnd.text = _endValue.ToString(_valueFormat);
+            }
+        }
+
+        private UISlider AddSlider(bool invert)
         {
             // Create the slider
             var slider = this.AddUIComponent<UISlider>();
@@ -194,7 +183,6 @@ namespace AutoEmptyingExtended.UI
             slider.minValue = _minValue;
             slider.maxValue = _maxValue;
             slider.stepSize = _stepSize;
-            slider.size = _sliderSize;
             slider.zOrder = 15;
 
             // Create the indicator
@@ -209,11 +197,10 @@ namespace AutoEmptyingExtended.UI
             return slider;
         }
 
-        private UILabel CreateLabel()
+        private UILabel AddLabel()
         {
             var label = this.AddUIComponent<UILabel>();
             label.textColor = new Color32(206, 248, 0, 255);
-            label.size = new Vector2(_labelWidth, 15);
 
             return label;
         }
@@ -222,45 +209,27 @@ namespace AutoEmptyingExtended.UI
 
         #region Methods
 
-        public override void Start()
+        public override void Awake()
         {
-            _sliderSize = new Vector2(this.width - _labelWidth - _padding * 3 - _iconWidth, 10);
-
-            //slider icon
-            _icon = this.AddUIComponent<UISprite>();
-            if (_iconAtlas != null)
-                _icon.atlas = _iconAtlas;
-            if (_iconSprite != null)
-                _icon.spriteName = _iconSprite;
-            _icon.size = new Vector2(_iconWidth, _iconWidth);
-            _icon.position = new Vector3(_padding, 0);
+            Logger.LogInGame("UIRangePicker: Awake()");
 
             //slider middle background
-            var sliderLine = this.AddUIComponent<UIPanel>();
-            sliderLine.backgroundSprite = "BudgetSlider";
-            sliderLine.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + 5);
-            sliderLine.size = new Vector2(_sliderSize.x, 10);
-            sliderLine.zOrder = 2;
+            _sliderLine = AddUIComponent<UIPanel>();
+            _sliderLine.backgroundSprite = "BudgetSlider";
+            _sliderLine.zOrder = 2;
             
-            //up value
-            _labelStart = CreateLabel();
-            _labelStart.position = new Vector3(_padding * 3 + _iconWidth + _sliderSize.x, -(this.height / 2) + _labelStart.size.y + 2);
 
-            //down value
-            _labelEnd = CreateLabel();
-            _labelEnd.position = new Vector3(_padding * 3 + _iconWidth + _sliderSize.x, -(this.height / 2) - 2);
+            _labelStart = AddLabel();           // up value
+            _sliderStart = AddSlider(false);    // up slider
+            _labelEnd = AddLabel();             // down value
+            _sliderEnd = AddSlider(true);       // down slider
 
-            //up slider
-            _sliderStart = CreateSlider(false);
-            _sliderStart.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + _sliderStart.size.y);
-
-            //down slider
-            _sliderEnd = CreateSlider(true);
-            _sliderEnd.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2));
 
             //values
-            _sliderStart.value = _minValue;
-            _sliderEnd.value = _maxValue;
+            UpdateUI();
+
+            //_sliderStart.value = _minValue;
+            //_sliderEnd.value = _maxValue;
 
             //events
             _sliderStart.eventValueChanged += (component, value) =>
@@ -300,7 +269,38 @@ namespace AutoEmptyingExtended.UI
                 }
             };
 
+            base.Awake();
+        }
+
+        public override void Start()
+        {
             base.Start();
+            
+            //add icon
+            _icon = AddUIComponent<UISprite>();
+            if (_iconAtlas != null) _icon.atlas = _iconAtlas;
+            if (_iconSprite != null) _icon.spriteName = _iconSprite;
+            _icon.size = new Vector2(_iconWidth, _iconWidth);
+            _icon.position = new Vector3(_padding, 0);
+
+
+            // adjust UI elements size
+            _sliderSize = new Vector2(this.width - _labelWidth - _padding * 3 - _iconWidth, 10);
+
+            _sliderLine.size = new Vector2(_sliderSize.x, 10);
+            _sliderLine.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + 5);
+            
+            _labelStart.size = new Vector2(_labelWidth, 15);
+            _labelStart.position = new Vector3(_padding * 3 + _iconWidth + _sliderSize.x, -(this.height / 2) + _labelStart.size.y + 2);
+
+            _labelEnd.size = new Vector2(_labelWidth, 15);
+            _labelEnd.position = new Vector3(_padding * 3 + _iconWidth + _sliderSize.x, -(this.height / 2) - 2);
+
+            _sliderStart.size = _sliderSize;
+            _sliderStart.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + _sliderStart.size.y);
+
+            _sliderEnd.size = _sliderSize;
+            _sliderEnd.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2));
         }
 
         #endregion

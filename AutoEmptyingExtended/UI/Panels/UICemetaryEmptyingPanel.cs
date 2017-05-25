@@ -4,11 +4,11 @@ namespace AutoEmptyingExtended.UI.Panels
 {
     public class UICemetaryEmptyingPanel : UIConfigurationPanel
     {
-        public override void Start()
+        public override void Awake()
         {
             this.Data = ConfigurationDataManager.Data.Cemetary;
 
-            base.Start();
+            base.Awake();
         }
     }
 }

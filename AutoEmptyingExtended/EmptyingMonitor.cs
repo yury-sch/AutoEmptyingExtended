@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using AutoEmptyingExtended.Data;
 using ColossalFramework;
 using ICities;
