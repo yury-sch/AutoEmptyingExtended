@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using ColossalFramework.Plugins;
 
 namespace AutoEmptyingExtended
 {
@@ -31,6 +32,12 @@ namespace AutoEmptyingExtended
         {
             var msg = Prefix + string.Format(message, args);
             Debug.LogError(msg);
+        }
+
+        public static void LogInGame(string message, params object[] args)
+        {
+            var msg = Prefix + string.Format(message, args);
+            DebugOutputPanel.AddMessage(PluginManager.MessageType.Message, msg);
         }
     }
 }
