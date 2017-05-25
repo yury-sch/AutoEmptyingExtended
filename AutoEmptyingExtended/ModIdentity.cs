@@ -11,7 +11,7 @@ namespace AutoEmptyingExtended
         {
             get
             {
-                return "Automatically clicks the \"Empty building to another facility\" buttons of your cemeteries and garbages to start emptying when they are almost filled up and stop when empty."
+                return "Manage your city cemeteries and landfills in an automatic way"
 #if DEBUG
                     + " v." + Assembly.GetExecutingAssembly().GetName().Version
 #endif
