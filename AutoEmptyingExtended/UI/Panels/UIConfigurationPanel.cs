@@ -67,7 +67,7 @@ namespace AutoEmptyingExtended.UI.Panels
             // add sub-components
             // --- "schedule cleaning" checkbox
             _enabledCheckbox = AddUIComponent<UICheckboxContainerPanel>();
-            _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingEnabled = value; };
+            _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingDisabled = !value; };
 
             // --- "filled %" slider
             _percentSlider = AddUIComponent<UISliderContainerPanel>();
@@ -108,6 +108,7 @@ namespace AutoEmptyingExtended.UI.Panels
             _timeRange.width = width - padding.horizontal;
             
             // update displayed values
+            _enabledCheckbox.Checked = !Data.AutoEmptyingDisabled;
             _timeRange.StartValue = Data.EmptyingTimeStart;
             _timeRange.EndValue = Data.EmptyingTimeEnd;
             _percentSlider.Value = Data.EmptyingPercentStart;

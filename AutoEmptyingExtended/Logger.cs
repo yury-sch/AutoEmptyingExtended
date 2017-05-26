@@ -34,6 +34,10 @@ namespace AutoEmptyingExtended
             Debug.LogError(msg);
         }
 
+        /// <summary>
+        /// Show the message in the game Debug Output (F7)
+        /// WARNING: calling the method before loading the game may lead to crash
+        /// </summary>
         public static void LogInGame(string message, params object[] args)
         {
             var msg = Prefix + string.Format(message, args);

@@ -12,6 +12,7 @@ namespace AutoEmptyingExtended.Data
         private const string DataId = "AEE_BuildingData";
         private const uint DataVersion = 0;
 
+
         private BuildingDataContainer[] FilterData(BuildingDataContainer[] data)
         {
             var list = new List<ushort>();
@@ -35,33 +36,41 @@ namespace AutoEmptyingExtended.Data
                 .ToArray();
         }
         
+
         public override void OnLoadData()
         {
             base.OnLoadData();
 
             // get bytes from savegame
             var bytes = serializableDataManager.LoadData(DataId);
-            if (bytes == null) return;
+            if (bytes == null || bytes.Length == 0) return;
 
             BuildingDataContainer[] data;
-
-            // deserialize data from byte[]
-            using (var stream = new MemoryStream(bytes))
-                data = DataSerializer.DeserializeArray<BuildingDataContainer>(stream, DataSerializer.Mode.Memory);
+            try
+            {
+                // deserialize data from byte[]
+                using (var stream = new MemoryStream(bytes))
+                    data = DataSerializer.DeserializeArray<BuildingDataContainer>(stream, DataSerializer.Mode.Memory);
+            }
+            catch
+            {
+                // sometimes deserialization fials -> use default configuration
+                Logger.LogError($"Failed to load the configuration (ID {DataId}) from savegame. Defaults were used.");
+                serializableDataManager.EraseData(DataId);
+                return;
+            }
 
             foreach (var buildingData in data)
                 BuildingDataManager.Data[buildingData.BuildingId] = buildingData;
 
-            Logger.Log("data loaded ({0} bytes)", bytes.Length);
+            Logger.Log($"Configuration (ID {DataId}) was loaded ({bytes.Length} bytes)");
         }
-
         public override void OnSaveData()
         {
             base.OnSaveData();
 
             // serialize data to bytes[]
-            var data = BuildingDataManager.Data.Values
-                .ToArray();
+            var data = BuildingDataManager.Data.Values.ToArray();
             data = FilterData(data);
 
             byte[] bytes;
@@ -74,7 +83,7 @@ namespace AutoEmptyingExtended.Data
             // save bytes in savegame
             serializableDataManager.SaveData(DataId, bytes);
 
-            Logger.Log("data saved ({0} bytes)", bytes.Length);
+            Logger.Log($"Configuration (ID {DataId}) was saved ({bytes.Length} bytes)");
         }
     }
 }

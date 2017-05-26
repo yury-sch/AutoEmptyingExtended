@@ -6,15 +6,16 @@ namespace AutoEmptyingExtended.Data
     public class BuildingDataManager
     {
         private static BuildingDataManager _instance;
+        public static BuildingDataManager Data => _instance ?? (_instance = new BuildingDataManager());
 
-        private readonly Dictionary<ushort, BuildingDataContainer> _buildingData;
 
         private BuildingDataManager()
         {
             _buildingData = new Dictionary<ushort, BuildingDataContainer>();
         }
 
-        public static BuildingDataManager Data => _instance ?? (_instance = new BuildingDataManager());
+        private readonly Dictionary<ushort, BuildingDataContainer> _buildingData;
+
 
         public BuildingDataContainer this[ushort id]
         {
@@ -25,13 +26,12 @@ namespace AutoEmptyingExtended.Data
 
                 var buildingManager = Singleton<BuildingManager>.instance;
                 var buildingAi = buildingManager.m_buildings.m_buffer[id].Info.m_buildingAI;
-                if (buildingAi is LandfillSiteAI || buildingAi is CemeteryAI)
-                {
-                    var buildingData = new BuildingDataContainer();
-                    _buildingData.Add(id, buildingData);
-                    return buildingData;
-                }
-                return null;
+                if (!(buildingAi is LandfillSiteAI || buildingAi is CemeteryAI)) return null;
+
+                var buildingData = new BuildingDataContainer();
+                _buildingData.Add(id, buildingData);
+
+                return buildingData;
             }
             set
             {
@@ -48,11 +48,9 @@ namespace AutoEmptyingExtended.Data
                         _buildingData.Add(id, buildingData);
                     }
                 }
+
                 if (buildingData != null)
-                {
-                    buildingData = value;
-                    _buildingData[id] = buildingData;
-                }
+                    _buildingData[id] = value;
             }
         }
 

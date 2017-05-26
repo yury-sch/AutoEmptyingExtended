@@ -143,7 +143,7 @@ namespace AutoEmptyingExtended
             var capacity = GetCapacity(ref building);
             var percentage = ((float)amount / capacity) * 100;
 
-            if (configuration.AutoEmptyingEnabled
+            if (!configuration.AutoEmptyingDisabled
                 && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None
                 && !serviceData.StartedAutomatically //verify that the user is not stopped manually
                 && !serviceData.AutoEmptyingDisabled 
@@ -164,7 +164,7 @@ namespace AutoEmptyingExtended
                     return log.ToString();
                 });
             }
-            else if (!configuration.AutoEmptyingEnabled
+            else if (configuration.AutoEmptyingDisabled
                 || serviceData.AutoEmptyingDisabled
                 || amount == 0
                 || currentTime >= configuration.EmptyingTimeEnd - 0.01

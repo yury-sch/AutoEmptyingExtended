@@ -4,14 +4,14 @@ namespace AutoEmptyingExtended.Data
 {
     public class ConfigurationDataContainer : IDataContainer
     {
-        public bool AutoEmptyingEnabled { get; set; }
-        public float EmptyingPercentStart { get; set; }
-        public float EmptyingTimeStart { get; set; }
-        public float EmptyingTimeEnd { get; set; }
+        public bool AutoEmptyingDisabled { get; set; } = false;
+        public float EmptyingPercentStart { get; set; } = 90;
+        public float EmptyingTimeStart { get; set; } = 0;
+        public float EmptyingTimeEnd { get; set; } = 24;
 
         public void Serialize(DataSerializer s)
         {
-            s.WriteBool(AutoEmptyingEnabled);
+            s.WriteBool(AutoEmptyingDisabled);
             s.WriteFloat(EmptyingPercentStart);
             s.WriteFloat(EmptyingTimeStart);
             s.WriteFloat(EmptyingTimeEnd);
@@ -19,7 +19,7 @@ namespace AutoEmptyingExtended.Data
 
         public void Deserialize(DataSerializer s)
         {
-            AutoEmptyingEnabled = s.ReadBool();
+            AutoEmptyingDisabled = s.ReadBool();
             EmptyingPercentStart = s.ReadFloat();
             EmptyingTimeStart = s.ReadFloat();
             EmptyingTimeEnd = s.ReadFloat();
