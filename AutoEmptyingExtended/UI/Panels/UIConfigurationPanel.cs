@@ -67,7 +67,6 @@ namespace AutoEmptyingExtended.UI.Panels
             // add sub-components
             // --- "schedule cleaning" checkbox
             _enabledCheckbox = AddUIComponent<UICheckboxContainerPanel>();
-            _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingDisabled = !value; };
 
             // --- "filled %" slider
             _percentSlider = AddUIComponent<UISliderContainerPanel>();
@@ -77,7 +76,6 @@ namespace AutoEmptyingExtended.UI.Panels
             _percentSlider.MinValue = 1f;
             _percentSlider.MaxValue = 100f;
             _percentSlider.StepSize = 1f;
-            _percentSlider.EventValueChanged += (component, value) => { Data.EmptyingPercentStart = value; };
 
             // --- "emptying timespan" slider
             _timeRange = AddUIComponent<UIRangePickerPanel>();
@@ -104,16 +102,18 @@ namespace AutoEmptyingExtended.UI.Panels
 
             _percentSlider.width = width - padding.horizontal;
             _timeRange.width = width - padding.horizontal;
-            
+
             // update displayed values
             _enabledCheckbox.Checked = !Data.AutoEmptyingDisabled;
+            _timeRange.EndValue = Data.EmptyingTimeEnd;     // IMPORTANT: init EndValue before StartValue
             _timeRange.StartValue = Data.EmptyingTimeStart;
-            _timeRange.EndValue = Data.EmptyingTimeEnd;
             _percentSlider.Value = Data.EmptyingPercentStart;
 
             // add events
+            _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingDisabled = !value; };
             _timeRange.EventStartValueChanged += (component, value) => { Data.EmptyingTimeStart = value; };
             _timeRange.EventEndValueChanged += (component, value) => { Data.EmptyingTimeEnd = value; };
+            _percentSlider.EventValueChanged += (component, value) => { Data.EmptyingPercentStart = value; };
         }
     }
 }

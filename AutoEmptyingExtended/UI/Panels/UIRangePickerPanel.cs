@@ -115,7 +115,7 @@ namespace AutoEmptyingExtended.UI.Panels
                     throw new DetailedException($"{nameof(UIRangePickerPanel)}: {nameof(StartValue)} is out of the range");
 
                 _startValue = value;
-                UpdateUI();
+                UpdateUIStartValue();
             }
         }
         public float EndValue
@@ -127,7 +127,7 @@ namespace AutoEmptyingExtended.UI.Panels
                     throw new DetailedException($"{nameof(UIRangePickerPanel)}: {nameof(StartValue)} < {nameof(MinValue)}");
 
                 _endValue = value;
-                UpdateUI();
+                UpdateUIEndValue();
             }
         }
 
@@ -137,7 +137,9 @@ namespace AutoEmptyingExtended.UI.Panels
             set
             {
                 _valueFormat = value;
-                UpdateUI();
+
+                UpdateUIStartValue();
+                UpdateUIEndValue();
             }
         }
 
@@ -155,25 +157,25 @@ namespace AutoEmptyingExtended.UI.Panels
 
         #region Utilities
 
-        private void UpdateUI()
+        private void UpdateUIStartValue()
         {
-            if (_sliderStart != null && _labelStart != null)
-            {
-                _sliderStart.value = _startValue;
-                _labelStart.text = _startValue.ToString(_valueFormat);
-            }
+            if (_sliderStart == null || _labelStart == null) return;
 
-            if (_sliderEnd != null && _labelEnd != null)
-            {
-                _sliderEnd.value = _endValue;
-                _labelEnd.text = _endValue.ToString(_valueFormat);
-            }
+            _sliderStart.value = _startValue;
+            _labelStart.text = _startValue.ToString(_valueFormat);
+        }
+        private void UpdateUIEndValue()
+        {
+            if (_sliderEnd == null || _labelEnd == null) return;
+
+            _sliderEnd.value = _endValue;
+            _labelEnd.text = _endValue.ToString(_valueFormat);
         }
 
         private UISlider AddSlider(bool invert)
         {
             // Create the slider
-            var slider = this.AddUIComponent<UISlider>();
+            var slider = AddUIComponent<UISlider>();
             slider.fillMode = UIFillMode.Fill;
             slider.orientation = UIOrientation.Horizontal;
             slider.minValue = _minValue;
@@ -186,16 +188,14 @@ namespace AutoEmptyingExtended.UI.Panels
             indicatorObject.transform.parent = slider.transform;
             var indicator = indicatorObject.AddComponent<UISprite>();
             indicator.spriteName = "SliderBudget";
-            if (invert)
-                indicator.flip = UISpriteFlip.FlipVertical;
+            if (invert) indicator.flip = UISpriteFlip.FlipVertical;
             slider.thumbObject = indicator;
 
             return slider;
         }
-
         private UILabel AddLabel()
         {
-            var label = this.AddUIComponent<UILabel>();
+            var label = AddUIComponent<UILabel>();
             label.textColor = new Color32(206, 248, 0, 255);
 
             return label;
@@ -209,20 +209,23 @@ namespace AutoEmptyingExtended.UI.Panels
         {
             base.Awake();
 
+            // add slider middle background
+            _sliderLine = AddUIComponent<UIPanel>();
+            _sliderLine.backgroundSprite = "BudgetSlider";
+            _sliderLine.zOrder = 2;
+
             // add sub-panels
             _labelStart = AddLabel();           // up value
             _sliderStart = AddSlider(false);    // up slider
             _labelEnd = AddLabel();             // down value
             _sliderEnd = AddSlider(true);       // down slider
 
-            // add slider middle background
-            _sliderLine = AddUIComponent<UIPanel>();
-            _sliderLine.backgroundSprite = "BudgetSlider";
-            _sliderLine.zOrder = 2;
-
             // init events
             _sliderStart.eventValueChanged += (component, value) =>
             {
+                // nothing has changed -> return
+                if (_startValue == value) return;
+
                 // deny setting the value higher than _sliderEnd value
                 if (value > _sliderEnd.value - 1)
                 {
@@ -230,32 +233,27 @@ namespace AutoEmptyingExtended.UI.Panels
                     return;
                 }
 
-                // nothing has changed -> return
-                if (_startValue == value) return;
-
                 // update & save
                 _startValue = value;
-                _sliderStart.value = value;
-                _labelStart.text = value.ToString(_valueFormat);
+                UpdateUIStartValue();
 
                 EventStartValueChanged?.Invoke(this, value);
             };
             _sliderEnd.eventValueChanged += (component, value) =>
             {
+                // nothing has changed -> return
+                if (_endValue == value) return;
+
                 // deny setting the value lower than _sliderStart value
                 if (value < _sliderStart.value + 1)
                 {
                     _sliderEnd.value = _sliderStart.value + 1;
                     return;
                 }
-
-                // nothing has changed -> return
-                if (_endValue == value) return;
-
+                
                 // update & save
                 _endValue = value;
-                _sliderEnd.value = value;
-                _labelEnd.text = value.ToString(_valueFormat);
+                UpdateUIEndValue();
 
                 EventEndValueChanged?.Invoke(this, value);
             };

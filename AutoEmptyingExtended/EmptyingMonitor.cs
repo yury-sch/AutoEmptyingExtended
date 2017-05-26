@@ -141,7 +141,7 @@ namespace AutoEmptyingExtended
             
             var amount = GetAmount(ref building);
             var capacity = GetCapacity(ref building);
-            var percentage = ((float)amount / capacity) * 100;
+            var percentage = (float)amount / capacity * 100;
 
             if (!configuration.AutoEmptyingDisabled
                 && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None
