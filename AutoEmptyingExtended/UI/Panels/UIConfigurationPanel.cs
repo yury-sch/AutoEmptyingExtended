@@ -5,25 +5,42 @@ using UnityEngine;
 
 namespace AutoEmptyingExtended.UI.Panels
 {
+    #region Class wrappers
+
+    public class UICemetaryEmptyingPanel : UIConfigurationPanel
+    {
+        public override void Awake()
+        {
+            Data = ConfigurationDataManager.Data.Cemetary;
+
+            base.Awake();
+        }
+    }
+
+    public class UILandfillEmptyingPanel : UIConfigurationPanel
+    {
+        public override void Awake()
+        {
+            Data = ConfigurationDataManager.Data.Landfill;
+
+            base.Awake();
+        }
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Panel appearing while a cemetry/landfill info view is selected
+    /// </summary>
     public abstract class UIConfigurationPanel : UIPanel
     {
-        private UICheckboxContainer _enabledCheckbox;
-        private UISliderContainer _percentSlider;
-        private UIRangePicker _timeRange;
+        private UICheckboxContainerPanel _enabledCheckbox;
+        private UISliderContainerPanel _percentSlider;
+        private UIRangePickerPanel _timeRange;
 
         protected ConfigurationDataContainer Data;
 
-
         #region Auxilary methods
-
-        private void UpdateUILabels()
-        {
-            Logger.LogInGame("UpdateUILabels()");
-            _enabledCheckbox.Checked = Data.AutoEmptyingEnabled;
-            _percentSlider.Value = Data.EmptyingPercentStart;
-            _timeRange.StartValue = Data.EmptyingTimeStart;
-            _timeRange.EndValue = Data.EmptyingTimeEnd;
-        }
 
         private void SetLocaledText()
         {
@@ -32,11 +49,9 @@ namespace AutoEmptyingExtended.UI.Panels
 
         #endregion
 
-
         public override void Awake()
         {
             base.Awake();
-            Logger.LogInGame("UIConfigurationPanel: Awake()");
             
             var resourceManager = TextureManager.Instance;
 
@@ -51,29 +66,29 @@ namespace AutoEmptyingExtended.UI.Panels
 
             // add sub-components
             // --- "schedule cleaning" checkbox
-            _enabledCheckbox = AddUIComponent<UICheckboxContainer>();
-            _enabledCheckbox.eventCheckChanged += (component, value) => { Data.AutoEmptyingEnabled = value; };
+            _enabledCheckbox = AddUIComponent<UICheckboxContainerPanel>();
+            _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingEnabled = value; };
 
             // --- "filled %" slider
-            _percentSlider = AddUIComponent<UISliderContainer>();
+            _percentSlider = AddUIComponent<UISliderContainerPanel>();
             _percentSlider.IconAtlas = resourceManager.Atlas;
             _percentSlider.IconSprite = "DimensionIcon";
             _percentSlider.ValueFormat = "###'%'";
             _percentSlider.MinValue = 1f;
             _percentSlider.MaxValue = 100f;
             _percentSlider.StepSize = 1f;
-            _percentSlider.eventValueChanged += (component, value) => { Data.EmptyingPercentStart = value; };
+            _percentSlider.EventValueChanged += (component, value) => { Data.EmptyingPercentStart = value; };
 
             // --- "emptying timespan" slider
-            _timeRange = AddUIComponent<UIRangePicker>();
+            _timeRange = AddUIComponent<UIRangePickerPanel>();
             _timeRange.IconAtlas = resourceManager.Atlas;
             _timeRange.IconSprite = "ClockIcon";
             _timeRange.ValueFormat = "0#.00";
             _timeRange.MinValue = 0;
             _timeRange.MaxValue = 24f;
             _timeRange.StepSize = 1f;
-            _timeRange.eventStartValueChanged += (component, value) => { Data.EmptyingTimeStart = value; };
-            _timeRange.eventEndValueChanged += (component, value) => { Data.EmptyingTimeEnd = value; };
+            _timeRange.EventStartValueChanged += (component, value) => { Data.EmptyingTimeStart = value; };
+            _timeRange.EventEndValueChanged += (component, value) => { Data.EmptyingTimeEnd = value; };
 
             // manage mod localization
             SetLocaledText();
@@ -92,7 +107,7 @@ namespace AutoEmptyingExtended.UI.Panels
             _percentSlider.width = width - padding.horizontal;
             _timeRange.width = width - padding.horizontal;
             
-            // update values
+            // update displayed values
             _timeRange.StartValue = Data.EmptyingTimeStart;
             _timeRange.EndValue = Data.EmptyingTimeEnd;
             _percentSlider.Value = Data.EmptyingPercentStart;

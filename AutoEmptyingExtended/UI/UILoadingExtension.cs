@@ -21,8 +21,6 @@ namespace AutoEmptyingExtended.UI
             return panelInfo?.instance as UIPanel;
         }
 
-        #endregion
-
         private void InitWindows()
         {
             // Add UIServiceInfoPanel to landfill site and cemetry panels
@@ -44,6 +42,18 @@ namespace AutoEmptyingExtended.UI
             _cemetaryEmptyingPanel = healthInfoViewPanel.AddUIComponent<UICemetaryEmptyingPanel>();
         }
 
+        private void DestroyWindows()
+        {
+            if (_serviceInfoPanel != null)
+                UnityEngine.Object.Destroy(_serviceInfoPanel);
+            if (_landfillEmptyingPanel != null)
+                UnityEngine.Object.Destroy(_landfillEmptyingPanel);
+            if (_cemetaryEmptyingPanel != null)
+                UnityEngine.Object.Destroy(_cemetaryEmptyingPanel);
+        }
+
+        #endregion
+        
         public override void OnLevelLoaded(LoadMode mode)
         {
             if (mode != LoadMode.LoadGame && mode != LoadMode.NewGame)
@@ -59,12 +69,7 @@ namespace AutoEmptyingExtended.UI
             if (_mode != LoadMode.LoadGame && _mode != LoadMode.NewGame)
                 return;
             
-            if (_serviceInfoPanel != null)
-                UnityEngine.Object.Destroy(_serviceInfoPanel);
-            if (_landfillEmptyingPanel != null)
-                UnityEngine.Object.Destroy(_landfillEmptyingPanel);
-            if (_cemetaryEmptyingPanel != null)
-                UnityEngine.Object.Destroy(_cemetaryEmptyingPanel);
+            DestroyWindows();
         }
     }
 }

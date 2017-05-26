@@ -61,19 +61,17 @@
     <Compile Include="UI\Localization\LocalizationExtensions.cs" />
     <Compile Include="UI\Localization\LocalizationManager.cs" />
     <Compile Include="UI\Localization\LocalizationMonitor.cs" />
-    <Compile Include="UI\Panels\UICemetaryEmptyingPanel.cs" />
-    <Compile Include="UI\Panels\UILandfillEmptyingPanel.cs" />
     <Compile Include="UI\Panels\UIConfigurationPanel.cs" />
     <Compile Include="EmptyingMonitor.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="ModIdentity.cs" />
-    <Compile Include="UI\UICheckboxContainer.cs" />
+    <Compile Include="UI\Panels\UICheckboxContainerPanel.cs" />
     <Compile Include="UI\Panels\UIServiceInfoPanel.cs" />
     <Compile Include="UI\TextureManager.cs" />
     <Compile Include="UI\UILoadingExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\UISliderContainer.cs" />
-    <Compile Include="UI\UIRangePicker.cs" />
+    <Compile Include="UI\Panels\UISliderContainerPanel.cs" />
+    <Compile Include="UI\Panels\UIRangePickerPanel.cs" />
     <Compile Include="Utils\ModException.cs" />
   </ItemGroup>
   <ItemGroup>

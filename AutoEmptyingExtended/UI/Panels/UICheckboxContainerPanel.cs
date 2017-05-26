@@ -1,17 +1,17 @@
 ﻿using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended.UI
+namespace AutoEmptyingExtended.UI.Panels
 {
-    public class UICheckboxContainer : UIPanel
+    public class UICheckboxContainerPanel : UIPanel
     {
         private string _text = "<default_text>";
         private UIButton _checkbox;
         private UILabel _description;
 
-        public event PropertyChangedEventHandler<bool> eventCheckChanged;
+        public event PropertyChangedEventHandler<bool> EventCheckChanged;
 
-        public UICheckboxContainer()
+        public UICheckboxContainerPanel()
         {
             width = 400;
             height = 16;
@@ -37,7 +37,7 @@ namespace AutoEmptyingExtended.UI
 
                 _checkbox.normalFgSprite = value ? "check-checked" : "check-unchecked";
 
-                eventCheckChanged?.Invoke(this, value);
+                EventCheckChanged?.Invoke(this, value);
             }
         }
 
@@ -52,9 +52,9 @@ namespace AutoEmptyingExtended.UI
             }
         }
 
-        public override void Start()
+        public override void Awake()
         {
-            base.Start();
+            base.Awake();
 
             // configure panel
             isVisible = true;

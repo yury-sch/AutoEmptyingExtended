@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using ColossalFramework.UI;
 using UnityEngine;
 
@@ -15,26 +16,27 @@ namespace AutoEmptyingExtended.UI
         {
             _assemblyPath = $"{Assembly.GetExecutingAssembly().GetName().Name}.Resources.";
 
-            _spriteNames = new[] {
+            _spriteNames = new[]
+            {
                 "ClockIcon",
                 "DimensionIcon"
-                        };
+            };
         }
 
         public static TextureManager Instance => _instance ?? (_instance = new TextureManager());
 
         public UITextureAtlas Atlas => _atlas ?? (_atlas = CreateTextureAtlas("AutoEmptyingUI", UIView.GetAView().defaultAtlas.material, _spriteNames));
 
-        private UITextureAtlas CreateTextureAtlas(string atlasName, Material baseMaterial, string[] spriteNames)
+        private UITextureAtlas CreateTextureAtlas(string atlasName, Material baseMaterial, IList<string> spriteNames)
         {
             const int size = 1024;
 
             var atlasTex = new Texture2D(size, size, TextureFormat.ARGB32, false);
-            var textures = new Texture2D[spriteNames.Length];
+            var textures = new Texture2D[spriteNames.Count];
 
-            for (var i = 0; i < spriteNames.Length; i++)
+            for (var i = 0; i < spriteNames.Count; i++)
             {
-                textures[i] = loadTextureFromAssembly($"{_assemblyPath}{spriteNames[i]}.png", false);
+                textures[i] = LoadTextureFromAssembly($"{_assemblyPath}{spriteNames[i]}.png", false);
             }
 
             var rects = atlasTex.PackTextures(textures, 2, size);
@@ -48,7 +50,7 @@ namespace AutoEmptyingExtended.UI
             atlas.name = atlasName;
 
             // Add SpriteInfo
-            for (var i = 0; i < spriteNames.Length; i++)
+            for (var i = 0; i < spriteNames.Count; i++)
             {
                 var spriteInfo = new UITextureAtlas.SpriteInfo()
                 {
@@ -61,16 +63,18 @@ namespace AutoEmptyingExtended.UI
             return atlas;
         }
 
-        private Texture2D loadTextureFromAssembly(string path, bool readOnly = true)
+        private static Texture2D LoadTextureFromAssembly(string path, bool readOnly = true)
         {
             var assembly = Assembly.GetExecutingAssembly();
             using (var textureStream = assembly.GetManifestResourceStream(path))
             {
-                var buf = new byte[textureStream.Length];  //declare arraysize
-                textureStream.Read(buf, 0, buf.Length); // read from stream to byte array
+                var buf = new byte[textureStream.Length];   //declare arraysize
+                textureStream.Read(buf, 0, buf.Length);     // read from stream to byte array
+
                 var tex = new Texture2D(2, 2, TextureFormat.ARGB32, false);
                 tex.LoadImage(buf);
                 tex.Apply(false, readOnly);
+
                 return tex;
             }
         }

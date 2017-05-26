@@ -1,14 +1,15 @@
-﻿using ColossalFramework.UI;
+﻿using AutoEmptyingExtended.Utils;
+using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended.UI
+namespace AutoEmptyingExtended.UI.Panels
 {
-    public class UISliderContainer : UIPanel
+    public class UISliderContainerPanel : UIPanel
     {
         #region Const
 
-        private static byte _padding = 10;
-        private static float _labelWidth = 50;
+        private const byte PanelPadding = 10;
+        private const float LabelWidth = 50;
 
         #endregion
 
@@ -16,8 +17,7 @@ namespace AutoEmptyingExtended.UI
 
         private readonly float _iconWidth;
 
-        private float _minValue;
-        private float _maxValue;
+        private float _minValue, _maxValue;
         private float _value;
         private float _stepSize;
         private string _valueFormat;
@@ -30,17 +30,18 @@ namespace AutoEmptyingExtended.UI
         private UISlider _slider;
         private UILabel _labelValue;
         private UIPanel _sliderLine;
+
         #endregion
 
         #region Ctor
 
-        public UISliderContainer()
+        public UISliderContainerPanel()
         {
             //init
             height = 40;
             backgroundSprite = "SubcategoriesPanel";
 
-            _iconWidth = this.height;
+            _iconWidth = height;
             _minValue = 0;
             _maxValue = 100f;
             _stepSize = 1f;
@@ -53,91 +54,69 @@ namespace AutoEmptyingExtended.UI
 
         public float MinValue
         {
-            get
-            {
-                return _minValue;
-            }
+            get => _minValue;
             set
             {
                 _minValue = value;
+
                 if (_slider != null)
-                {
                     _slider.minValue = value;
-                }
             }
         }
-
         public float MaxValue
         {
-            get
-            {
-                return _maxValue;
-            }
+            get => _maxValue;
             set
             {
                 _maxValue = value;
+
                 if (_slider != null)
-                {
                     _slider.maxValue = value;
-                }
             }
         }
 
         public float StepSize
         {
-            get { return _stepSize; }
+            get => _stepSize;
             set
             {
                 _stepSize = value;
+
                 if (_slider != null)
-                {
                     _slider.stepSize = _stepSize;
-                }
             }
         }
 
         public float Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
-                if (_slider != null && value >= _minValue && value <= _maxValue)
-                {
-                    _slider.value = value;
-                }
+                if (value < _minValue || value > _maxValue)
+                    throw new DetailedException($"{nameof(UISliderContainerPanel)}: {nameof(Value)} is out of the range");
+
+                _value = value;
+                UpdateUI();
             }
         }
-
         public string ValueFormat
         {
-            get { return _valueFormat; }
+            get => _valueFormat;
             set
             {
                 _valueFormat = value;
-
-                //update labels
-                if (_slider != null)
-                {
-                    Value = _slider.value;
-                }
+                UpdateUI();
             }
         }
 
-        public UITextureAtlas IconAtlas
-        {
-            set { _iconAtlas = value; }
-        }
-
-        public string IconSprite
-        {
-            set { _iconSprite = value; }
-        }
+        public UITextureAtlas IconAtlas { set => _iconAtlas = value; }
+        public string IconSprite { set => _iconSprite = value; }
 
         #endregion
 
         #region Events
 
-        public event PropertyChangedEventHandler<float> eventValueChanged;
+        public event PropertyChangedEventHandler<float> EventValueChanged;
 
         #endregion
 
@@ -175,6 +154,15 @@ namespace AutoEmptyingExtended.UI
             return label;
         }
 
+        private void UpdateUI()
+        {
+            if (_slider != null && _labelValue != null)
+            {
+                _slider.value = _value;
+                _labelValue.text = _value.ToString(_valueFormat);
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -197,14 +185,11 @@ namespace AutoEmptyingExtended.UI
             _slider.value = _maxValue;
             _slider.eventValueChanged += (component, value) =>
             {
-                if (_value != value)
-                {
-                    _value = value;
-                    _slider.value = value;
-                    _labelValue.text = value.ToString(_valueFormat);
+                _value = value;
+                _slider.value = value;
+                _labelValue.text = value.ToString(_valueFormat);
 
-                    eventValueChanged?.Invoke(this, value);
-                }
+                EventValueChanged?.Invoke(this, value);
             };
         }
 
@@ -217,20 +202,19 @@ namespace AutoEmptyingExtended.UI
             if (_iconAtlas != null) _icon.atlas = _iconAtlas;
             if (_iconSprite != null) _icon.spriteName = _iconSprite;
             _icon.size = new Vector2(_iconWidth, _iconWidth);
-            _icon.position = new Vector3(_padding, 0);
-
+            _icon.position = new Vector3(PanelPadding, 0);
 
             // adjust UI elements size
-            _sliderSize = new Vector2(width - _labelWidth - _padding * 3 - _iconWidth, 10);
+            _sliderSize = new Vector2(width - LabelWidth - PanelPadding * 3 - _iconWidth, 10);
 
             _sliderLine.size = new Vector2(_sliderSize.x, 10);
-            _sliderLine.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + 5);
+            _sliderLine.position = new Vector3(PanelPadding * 2 + _iconWidth, -(height / 2) + 5);
 
-            _labelValue.size = new Vector2(_labelWidth, 15);
-            _labelValue.position = new Vector3(_padding * 3 + _iconWidth + _sliderSize.x, -(this.height / 2) + (_labelValue.size.y / 2));
+            _labelValue.size = new Vector2(LabelWidth, 15);
+            _labelValue.position = new Vector3(PanelPadding * 3 + _iconWidth + _sliderSize.x, -(height / 2) + _labelValue.size.y / 2);
             
             _slider.size = _sliderSize;
-            _slider.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + (_slider.size.y / 2));
+            _slider.position = new Vector3(PanelPadding * 2 + _iconWidth, -(height / 2) + _slider.size.y / 2);
         }
 
         #endregion

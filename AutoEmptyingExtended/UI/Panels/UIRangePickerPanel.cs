@@ -2,25 +2,23 @@
 using ColossalFramework.UI;
 using UnityEngine;
 
-namespace AutoEmptyingExtended.UI
+namespace AutoEmptyingExtended.UI.Panels
 {
-    public class UIRangePicker : UIPanel
+    public class UIRangePickerPanel : UIPanel
     {
         #region Const
 
-        private static byte _padding = 10;
-        private static byte _labelWidth = 50;
+        private const byte PanelPadding = 10;
+        private const byte LabelWidth = 50;
 
         #endregion
 
         #region Fields
-        
+
         private readonly float _iconWidth;
 
-        private float _minValue;
-        private float _maxValue;
-        private float _startValue;
-        private float _endValue;
+        private float _minValue, _maxValue;
+        private float _startValue, _endValue;
         private float _stepSize;
         private string _valueFormat;
 
@@ -39,12 +37,13 @@ namespace AutoEmptyingExtended.UI
 
         #region Ctor
 
-        public UIRangePicker()
+        public UIRangePickerPanel()
         {
             //init
-            this.height = 40;
-            this.backgroundSprite = "SubcategoriesPanel";
-            _iconWidth = this.height;
+            height = 40;
+            backgroundSprite = "SubcategoriesPanel";
+
+            _iconWidth = height;
             _minValue = 0;
             _maxValue = 100f;
             _stepSize = 1f;
@@ -54,10 +53,10 @@ namespace AutoEmptyingExtended.UI
         #endregion
 
         #region Events
-        
-        public event PropertyChangedEventHandler<float> eventStartValueChanged;
 
-        public event PropertyChangedEventHandler<float> eventEndValueChanged;
+        public event PropertyChangedEventHandler<float> EventStartValueChanged;
+
+        public event PropertyChangedEventHandler<float> EventEndValueChanged;
 
         #endregion
 
@@ -106,14 +105,14 @@ namespace AutoEmptyingExtended.UI
                 }
             }
         }
-        
+
         public float StartValue
         {
             get => _startValue;
             set
             {
                 if (value < _minValue || value > _maxValue)
-                    throw new DetailedException($"{nameof(UIRangePicker)}: {nameof(StartValue)} < {nameof(MinValue)}");
+                    throw new DetailedException($"{nameof(UIRangePickerPanel)}: {nameof(StartValue)} is out of the range");
 
                 _startValue = value;
                 UpdateUI();
@@ -125,7 +124,7 @@ namespace AutoEmptyingExtended.UI
             set
             {
                 if (value < _minValue || value > _maxValue)
-                    throw new DetailedException($"{nameof(UIRangePicker)}: {nameof(StartValue)} < {nameof(MinValue)}");
+                    throw new DetailedException($"{nameof(UIRangePickerPanel)}: {nameof(StartValue)} < {nameof(MinValue)}");
 
                 _endValue = value;
                 UpdateUI();
@@ -160,15 +159,12 @@ namespace AutoEmptyingExtended.UI
         {
             if (_sliderStart != null && _labelStart != null)
             {
-                Logger.LogInGame($"UPDATED WITH {_startValue}");
-
                 _sliderStart.value = _startValue;
                 _labelStart.text = _startValue.ToString(_valueFormat);
             }
 
             if (_sliderEnd != null && _labelEnd != null)
             {
-                Logger.LogInGame($"UPDATED WITH {_endValue}");
                 _sliderEnd.value = _endValue;
                 _labelEnd.text = _endValue.ToString(_valueFormat);
             }
@@ -211,96 +207,89 @@ namespace AutoEmptyingExtended.UI
 
         public override void Awake()
         {
-            Logger.LogInGame("UIRangePicker: Awake()");
+            base.Awake();
 
-            //slider middle background
-            _sliderLine = AddUIComponent<UIPanel>();
-            _sliderLine.backgroundSprite = "BudgetSlider";
-            _sliderLine.zOrder = 2;
-            
-
+            // add sub-panels
             _labelStart = AddLabel();           // up value
             _sliderStart = AddSlider(false);    // up slider
             _labelEnd = AddLabel();             // down value
             _sliderEnd = AddSlider(true);       // down slider
 
+            // add slider middle background
+            _sliderLine = AddUIComponent<UIPanel>();
+            _sliderLine.backgroundSprite = "BudgetSlider";
+            _sliderLine.zOrder = 2;
 
-            //values
-            UpdateUI();
-
-            //_sliderStart.value = _minValue;
-            //_sliderEnd.value = _maxValue;
-
-            //events
+            // init events
             _sliderStart.eventValueChanged += (component, value) =>
             {
+                // deny setting the value higher than _sliderEnd value
                 if (value > _sliderEnd.value - 1)
                 {
                     _sliderStart.value = _sliderEnd.value - 1;
+                    return;
                 }
-                else
-                {
-                    if (_startValue != value)
-                    {
-                        _startValue = value;
-                        _sliderStart.value = value;
-                        _labelStart.text = value.ToString(_valueFormat);
 
-                        eventStartValueChanged?.Invoke(this, value);
-                    }
-                }
+                // nothing has changed -> return
+                if (_startValue == value) return;
+
+                // update & save
+                _startValue = value;
+                _sliderStart.value = value;
+                _labelStart.text = value.ToString(_valueFormat);
+
+                EventStartValueChanged?.Invoke(this, value);
             };
             _sliderEnd.eventValueChanged += (component, value) =>
             {
+                // deny setting the value lower than _sliderStart value
                 if (value < _sliderStart.value + 1)
                 {
                     _sliderEnd.value = _sliderStart.value + 1;
+                    return;
                 }
-                else
-                {
-                    if (_endValue != value)
-                    {
-                        _endValue = value;
-                        _sliderEnd.value = value;
-                        _labelEnd.text = value.ToString(_valueFormat);
 
-                        eventEndValueChanged?.Invoke(this, value);
-                    }
-                }
+                // nothing has changed -> return
+                if (_endValue == value) return;
+
+                // update & save
+                _endValue = value;
+                _sliderEnd.value = value;
+                _labelEnd.text = value.ToString(_valueFormat);
+
+                EventEndValueChanged?.Invoke(this, value);
             };
-
-            base.Awake();
         }
 
         public override void Start()
         {
             base.Start();
-            
+
             //add icon
             _icon = AddUIComponent<UISprite>();
             if (_iconAtlas != null) _icon.atlas = _iconAtlas;
             if (_iconSprite != null) _icon.spriteName = _iconSprite;
             _icon.size = new Vector2(_iconWidth, _iconWidth);
-            _icon.position = new Vector3(_padding, 0);
+            _icon.position = new Vector3(PanelPadding, 0);
 
 
             // adjust UI elements size
-            _sliderSize = new Vector2(this.width - _labelWidth - _padding * 3 - _iconWidth, 10);
+            _sliderSize = new Vector2(width - LabelWidth - PanelPadding * 3 - _iconWidth, 10);
 
             _sliderLine.size = new Vector2(_sliderSize.x, 10);
-            _sliderLine.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + 5);
-            
-            _labelStart.size = new Vector2(_labelWidth, 15);
-            _labelStart.position = new Vector3(_padding * 3 + _iconWidth + _sliderSize.x, -(this.height / 2) + _labelStart.size.y + 2);
+            _sliderLine.position = new Vector3(PanelPadding * 2 + _iconWidth, -(height / 2) + 5);
 
-            _labelEnd.size = new Vector2(_labelWidth, 15);
-            _labelEnd.position = new Vector3(_padding * 3 + _iconWidth + _sliderSize.x, -(this.height / 2) - 2);
+            _labelStart.size = new Vector2(LabelWidth, 15);
+            _labelStart.position = new Vector3(PanelPadding * 3 + _iconWidth + _sliderSize.x, -(height / 2) + _labelStart.size.y + 2);
+
+            _labelEnd.size = new Vector2(LabelWidth, 15);
+            _labelEnd.position = new Vector3(PanelPadding * 3 + _iconWidth + _sliderSize.x, -(height / 2) - 2);
 
             _sliderStart.size = _sliderSize;
-            _sliderStart.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2) + _sliderStart.size.y);
+            _sliderStart.position = new Vector3(PanelPadding * 2 + _iconWidth, -(height / 2) + _sliderStart.size.y);
 
             _sliderEnd.size = _sliderSize;
-            _sliderEnd.position = new Vector3(_padding * 2 + _iconWidth, -(this.height / 2));
+            _sliderEnd.position = new Vector3(PanelPadding * 2 + _iconWidth, -(height / 2));
         }
 
         #endregion
