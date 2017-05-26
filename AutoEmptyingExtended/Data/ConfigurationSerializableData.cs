@@ -59,9 +59,6 @@ namespace AutoEmptyingExtended.Data
 
             ConfigurationDataManager.Data.Landfill = LoadData(LandfillDataId);
             ConfigurationDataManager.Data.Cemetary = LoadData(CemetaryDataId);
-
-            Logger.Log(ConfigurationDataManager.Data.Landfill.AutoEmptyingDisabled.ToString());
-            Logger.Log(ConfigurationDataManager.Data.Landfill.EmptyingTimeStart.ToString());
         }
         public override void OnSaveData()
         {

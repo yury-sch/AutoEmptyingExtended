@@ -39,9 +39,8 @@ namespace AutoEmptyingExtended.UI.Panels
             _autoEmptyingCheckbox = AddUIComponent<UICheckboxContainerPanel>();
             _autoEmptyingCheckbox.EventCheckChanged += (component, value) =>
             {
-                if (_selectedBuilding == 0)
-                    return;
-                    BuildingDataManager.Data[_selectedBuilding].AutoEmptyingDisabled = value;
+                if (_selectedBuilding == 0) return;
+                BuildingDataManager.Data[_selectedBuilding].AutoEmptyingDisabled = value;
             };
 
             //_autoFillingCheckbox = AddUIComponent<UICheckboxContainerPanel>();

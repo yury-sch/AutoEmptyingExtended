@@ -87,8 +87,6 @@ namespace AutoEmptyingExtended.UI.Panels
             _timeRange.MinValue = 0;
             _timeRange.MaxValue = 24f;
             _timeRange.StepSize = 1f;
-            _timeRange.EventStartValueChanged += (component, value) => { Data.EmptyingTimeStart = value; };
-            _timeRange.EventEndValueChanged += (component, value) => { Data.EmptyingTimeEnd = value; };
 
             // manage mod localization
             SetLocaledText();
@@ -112,6 +110,10 @@ namespace AutoEmptyingExtended.UI.Panels
             _timeRange.StartValue = Data.EmptyingTimeStart;
             _timeRange.EndValue = Data.EmptyingTimeEnd;
             _percentSlider.Value = Data.EmptyingPercentStart;
+
+            // add events
+            _timeRange.EventStartValueChanged += (component, value) => { Data.EmptyingTimeStart = value; };
+            _timeRange.EventEndValueChanged += (component, value) => { Data.EmptyingTimeEnd = value; };
         }
     }
 }
