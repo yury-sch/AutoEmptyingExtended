@@ -7,6 +7,6 @@
     <Value>Auto emptying is carried out daily from {0} to {1} if the service is {2} full</Value>
   </LocaleResource>
   <LocaleResource Name="CityServicePanel.AutoEmptying.Disabled">
-    <Value>Disable auto emptying</Value>
+    <Value>Disable auto-emptying</Value>
   </LocaleResource>
 </Language>
