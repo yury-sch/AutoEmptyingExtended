@@ -224,12 +224,12 @@ namespace AutoEmptyingExtended.UI.Panels
             _sliderStart.eventValueChanged += (component, value) =>
             {
                 // nothing has changed -> return
-                if (_startValue == value) return;
+                if (value == _startValue) return;
 
                 // deny setting the value higher than _sliderEnd value
-                if (value > _sliderEnd.value - 1)
+                if (value == _sliderEnd.value)
                 {
-                    _sliderStart.value = _sliderEnd.value - 1;
+                    _sliderStart.value = value == MaxValue ? --value : ++value;
                     return;
                 }
 
@@ -242,12 +242,12 @@ namespace AutoEmptyingExtended.UI.Panels
             _sliderEnd.eventValueChanged += (component, value) =>
             {
                 // nothing has changed -> return
-                if (_endValue == value) return;
+                if (value == _endValue) return;
 
                 // deny setting the value lower than _sliderStart value
-                if (value < _sliderStart.value + 1)
+                if (value == _sliderStart.value)
                 {
-                    _sliderEnd.value = _sliderStart.value + 1;
+                    _sliderEnd.value = value == MinValue ? ++value : --value;
                     return;
                 }
                 

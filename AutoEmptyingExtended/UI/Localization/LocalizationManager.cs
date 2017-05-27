@@ -11,7 +11,7 @@ namespace AutoEmptyingExtended.UI.Localization
 {
     public class LocalizationManager
     {
-        private static readonly string DEFAULT_TRANSLATION_PREFIX = "lang";
+        private const string DEFAULT_TRANSLATION_PREFIX = "lang";
 
         private static LocalizationManager _instance;
         private static string _language = null;
@@ -30,18 +30,8 @@ namespace AutoEmptyingExtended.UI.Localization
 
         public event LocaleChangedEventHandler EventLocaleChanged;
 
-        public static LocalizationManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new LocalizationManager();
-                }
-                return _instance;
-            }
-        }
-        
+        public static LocalizationManager Instance => _instance ?? (_instance = new LocalizationManager());
+
         private string GetTranslatedFileName(string filenamePrefix, string language)
         {
             switch (language)
@@ -114,7 +104,8 @@ namespace AutoEmptyingExtended.UI.Localization
 
         public string GetString(string key)
         {
-            string ret = null;
+            string ret;
+
             try
             {
                 _translations.TryGetValue(key, out ret);
@@ -124,9 +115,8 @@ namespace AutoEmptyingExtended.UI.Localization
                 Logger.LogError($"Error fetching the key {key} from the translation dictionary: {e}");
                 return key;
             }
-            if (ret == null)
-                return key;
-            return ret;
+
+            return ret ?? key;
         }
 
         public void CheckAndUpdateLocales()

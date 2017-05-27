@@ -37,6 +37,11 @@ namespace AutoEmptyingExtended.UI.Panels
         private UICheckboxContainerPanel _enabledCheckbox;
         private UISliderContainerPanel _percentSlider;
         private UIRangePickerPanel _timeRange;
+        private UILabel _summaryLabel;
+
+        private string _summaryFormat;
+        private const string TimeFormat = "0#.00";
+        private const string FilledFormat = "###'%'";
 
         protected ConfigurationDataContainer Data;
 
@@ -45,6 +50,15 @@ namespace AutoEmptyingExtended.UI.Panels
         private void SetLocaledText()
         {
             _enabledCheckbox.Text = "ConfigurationPanel.AutoEmptying.Enabled".Translate();
+            _summaryFormat = "ConfigurationPanel.AutoEmptying.Summary".Translate();
+        }
+
+        private string FormatSummaryValue()
+        {
+            return string.Format(_summaryFormat,
+                    Data.EmptyingTimeStart.ToString(TimeFormat),
+                    Data.EmptyingTimeEnd.ToString(TimeFormat),
+                    Data.EmptyingPercentStart.ToString(FilledFormat));
         }
 
         #endregion
@@ -72,7 +86,7 @@ namespace AutoEmptyingExtended.UI.Panels
             _percentSlider = AddUIComponent<UISliderContainerPanel>();
             _percentSlider.IconAtlas = resourceManager.Atlas;
             _percentSlider.IconSprite = "DimensionIcon";
-            _percentSlider.ValueFormat = "###'%'";
+            _percentSlider.ValueFormat = FilledFormat;
             _percentSlider.MinValue = 1f;
             _percentSlider.MaxValue = 100f;
             _percentSlider.StepSize = 1f;
@@ -81,10 +95,14 @@ namespace AutoEmptyingExtended.UI.Panels
             _timeRange = AddUIComponent<UIRangePickerPanel>();
             _timeRange.IconAtlas = resourceManager.Atlas;
             _timeRange.IconSprite = "ClockIcon";
-            _timeRange.ValueFormat = "0#.00";
+            _timeRange.ValueFormat = TimeFormat;
             _timeRange.MinValue = 0;
             _timeRange.MaxValue = 24f;
             _timeRange.StepSize = 1f;
+
+            // --- "summary" label
+            _summaryLabel = AddUIComponent<UILabel>();
+            _summaryLabel.textColor = new Color32(206, 248, 0, 255);
 
             // manage mod localization
             SetLocaledText();
@@ -98,10 +116,13 @@ namespace AutoEmptyingExtended.UI.Panels
             // adjust UI elements size
             position = new Vector3(0, -parent.height + 1);
             width = parent.width;
-            height = 160;
+            height = 214;
 
             _percentSlider.width = width - padding.horizontal;
             _timeRange.width = width - padding.horizontal;
+            _summaryLabel.width = width - padding.horizontal;
+            _summaryLabel.autoHeight = true;
+            _summaryLabel.wordWrap = true;
 
             // update displayed values
             _enabledCheckbox.Checked = !Data.AutoEmptyingDisabled;
@@ -111,9 +132,23 @@ namespace AutoEmptyingExtended.UI.Panels
 
             // add events
             _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingDisabled = !value; };
-            _timeRange.EventStartValueChanged += (component, value) => { Data.EmptyingTimeStart = value; };
-            _timeRange.EventEndValueChanged += (component, value) => { Data.EmptyingTimeEnd = value; };
-            _percentSlider.EventValueChanged += (component, value) => { Data.EmptyingPercentStart = value; };
+            _timeRange.EventStartValueChanged += (component, value) =>
+            {
+                Data.EmptyingTimeStart = value;
+                _summaryLabel.text = FormatSummaryValue();
+            };
+            _timeRange.EventEndValueChanged += (component, value) => {
+                Data.EmptyingTimeEnd = value;
+                _summaryLabel.text = FormatSummaryValue();
+            };
+            _percentSlider.EventValueChanged += (component, value) =>
+            {
+                Data.EmptyingPercentStart = value;
+                _summaryLabel.text = FormatSummaryValue();
+            };
+
+            // show summary
+            _summaryLabel.text = FormatSummaryValue();
         }
     }
 }

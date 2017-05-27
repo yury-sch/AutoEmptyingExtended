@@ -3,6 +3,9 @@
   <LocaleResource Name="ConfigurationPanel.AutoEmptying.Enabled">
     <Value>Очищать по расписанию</Value>
   </LocaleResource>
+  <LocaleResource Name="ConfigurationPanel.AutoEmptying.Summary">
+    <Value>Очистка производится ежедневно с {0} до {1} при {2} заполнении</Value>
+  </LocaleResource>
   <LocaleResource Name="CityServicePanel.AutoEmptying.Disabled">
     <Value>Выключить авто-очистку</Value>
   </LocaleResource>
