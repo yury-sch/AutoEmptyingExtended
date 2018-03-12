@@ -25,9 +25,9 @@ namespace AutoEmptyingExtended
         }
 
         #endregion
-        
+
         #region Utilities
-        
+
         private int GetAmount(ref Building building)
         {
             var buildingAI = building.Info.m_buildingAI;
@@ -94,7 +94,7 @@ namespace AutoEmptyingExtended
         //    }
         //    return false;
         //}
-        
+
         private bool CanBeEmptied(ItemClass.Service serviceType)
         {
             var serviceBuildings = _buildingManager.GetServiceBuildings(serviceType);
@@ -138,7 +138,7 @@ namespace AutoEmptyingExtended
 
             var serviceData = _buildingDataManager[buildingId];
             var currentTime = DayNightProperties.instance.m_TimeOfDay;
-            
+
             var amount = GetAmount(ref building);
             var capacity = GetCapacity(ref building);
             var percentage = (float)amount / capacity * 100;
@@ -146,7 +146,7 @@ namespace AutoEmptyingExtended
             if (!configuration.AutoEmptyingDisabled
                 && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.None
                 && !serviceData.StartedAutomatically //verify that the user is not stopped manually
-                && !serviceData.AutoEmptyingDisabled 
+                && !serviceData.AutoEmptyingDisabled
                 && percentage >= configuration.EmptyingPercentStart
                 && currentTime >= configuration.EmptyingTimeStart
                 && currentTime < configuration.EmptyingTimeEnd
@@ -164,11 +164,23 @@ namespace AutoEmptyingExtended
                     return log.ToString();
                 });
             }
+            //seems to not work, need revision
+            else if (!configuration.AutoEmptyingDisabled
+                     && !serviceData.StartedAutomatically //verify that the user is not stopped manually
+                     && !serviceData.AutoEmptyingDisabled
+                     && configuration.HasJustChanged 
+                     && percentage < configuration.EmptyingPercentStart)
+            {
+                 configuration.HasJustChanged = false;
+                 buildingAi.SetEmptying(buildingId, ref building, false);
+                 serviceData.StartedAutomatically = false;
+            }
+
             else if (configuration.AutoEmptyingDisabled
-                || serviceData.AutoEmptyingDisabled
-                || amount == 0
-                || currentTime >= configuration.EmptyingTimeEnd - 0.01
-                || !canBeEmptied)
+                     || serviceData.AutoEmptyingDisabled
+                     || percentage < configuration.EmptyingPercentStop
+                     || currentTime >= configuration.EmptyingTimeEnd - 0.01
+                     || !canBeEmptied)
             {
                 if (serviceData.StartedAutomatically
                     && (building.m_flags & Building.Flags.Downgrading) == Building.Flags.Downgrading)

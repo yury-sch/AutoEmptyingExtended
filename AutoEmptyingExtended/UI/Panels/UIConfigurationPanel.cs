@@ -35,7 +35,7 @@ namespace AutoEmptyingExtended.UI.Panels
     public abstract class UIConfigurationPanel : UIPanel
     {
         private UICheckboxContainerPanel _enabledCheckbox;
-        private UISliderContainerPanel _percentSlider;
+        private UIRangePickerPanel _percentRange;
         private UIRangePickerPanel _timeRange;
         private UILabel _summaryLabel;
 
@@ -83,13 +83,13 @@ namespace AutoEmptyingExtended.UI.Panels
             _enabledCheckbox = AddUIComponent<UICheckboxContainerPanel>();
 
             // --- "filled %" slider
-            _percentSlider = AddUIComponent<UISliderContainerPanel>();
-            _percentSlider.IconAtlas = resourceManager.Atlas;
-            _percentSlider.IconSprite = "DimensionIcon";
-            _percentSlider.ValueFormat = FilledFormat;
-            _percentSlider.MinValue = 1f;
-            _percentSlider.MaxValue = 100f;
-            _percentSlider.StepSize = 1f;
+            _percentRange = AddUIComponent<UIRangePickerPanel>();
+            _percentRange.IconAtlas = resourceManager.Atlas;
+            _percentRange.IconSprite = "DimensionIcon";
+            _percentRange.ValueFormat = FilledFormat;
+            _percentRange.MinValue = 1f;
+            _percentRange.MaxValue = 100f;
+            _percentRange.StepSize = 1f;
 
             // --- "emptying timespan" slider
             _timeRange = AddUIComponent<UIRangePickerPanel>();
@@ -118,7 +118,7 @@ namespace AutoEmptyingExtended.UI.Panels
             width = parent.width;
             height = 214;
 
-            _percentSlider.width = width - padding.horizontal;
+            _percentRange.width = width - padding.horizontal;
             _timeRange.width = width - padding.horizontal;
             _summaryLabel.width = width - padding.horizontal;
             _summaryLabel.autoHeight = true;
@@ -128,7 +128,8 @@ namespace AutoEmptyingExtended.UI.Panels
             _enabledCheckbox.Checked = !Data.AutoEmptyingDisabled;
             _timeRange.EndValue = Data.EmptyingTimeEnd;     // IMPORTANT: init EndValue before StartValue
             _timeRange.StartValue = Data.EmptyingTimeStart;
-            _percentSlider.Value = Data.EmptyingPercentStart;
+            _percentRange.EndValue = Data.EmptyingPercentStart;
+            _percentRange.StartValue = Data.EmptyingPercentStop;
 
             // add events
             _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingDisabled = !value; };
@@ -141,10 +142,39 @@ namespace AutoEmptyingExtended.UI.Panels
                 Data.EmptyingTimeEnd = value;
                 _summaryLabel.text = FormatSummaryValue();
             };
-            _percentSlider.EventValueChanged += (component, value) =>
+            //guarantee that only valid values are assigned and make some sense
+            //start value == percentage to stop
+            _percentRange.EventStartValueChanged += (component, value) =>
             {
-                Data.EmptyingPercentStart = value;
+                if (value <= (_percentRange.EndValue - 5f))
+                {
+                    Data.EmptyingPercentStop = value;
+                }
+                else if (value > _percentRange.EndValue - 5f)
+                {
+                    value = _percentRange.EndValue - 5f;
+                    _percentRange.StartValue = value;
+                    Data.EmptyingPercentStop = value;
+                }
+
                 _summaryLabel.text = FormatSummaryValue();
+            };
+            //end value == percentage to start
+            _percentRange.EventEndValueChanged += (component, value) =>
+            {
+                if (value >= (_percentRange.StartValue + 5f))
+                {
+                    Data.EmptyingPercentStart = value;
+                }
+                else if(value < _percentRange.StartValue + 5f)
+                {
+                    value = _percentRange.StartValue + 5f;
+                    Data.EmptyingPercentStop = value;
+                    _percentRange.EndValue = value;
+                }
+                _summaryLabel.text = FormatSummaryValue();
+                Data.HasJustChanged = true;
+
             };
 
             // show summary
