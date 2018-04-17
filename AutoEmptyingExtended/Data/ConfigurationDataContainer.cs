@@ -14,6 +14,7 @@ namespace AutoEmptyingExtended.Data
         public void Serialize(DataSerializer s)
         {
             s.WriteBool(AutoEmptyingDisabled);
+            s.WriteBool(HasJustChanged);
             s.WriteFloat(EmptyingPercentStart);
             s.WriteFloat(EmptyingPercentStop);
             s.WriteFloat(EmptyingTimeStart);
@@ -23,6 +24,7 @@ namespace AutoEmptyingExtended.Data
         public void Deserialize(DataSerializer s)
         {
             AutoEmptyingDisabled = s.ReadBool();
+            HasJustChanged = s.ReadBool();
             EmptyingPercentStart = s.ReadFloat();
             EmptyingPercentStop = s.ReadFloat();
             EmptyingTimeStart = s.ReadFloat();

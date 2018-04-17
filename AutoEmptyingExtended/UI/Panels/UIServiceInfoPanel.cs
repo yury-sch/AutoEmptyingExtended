@@ -31,7 +31,7 @@ namespace AutoEmptyingExtended.UI.Panels
             autoLayoutPadding = new RectOffset(0, 0, 1, 1);
             autoLayoutStart = LayoutStart.TopLeft;
 
-            position = new Vector3(160, 120);
+            position = new Vector3(160, 145);
             width = 400;
             height = 200;
 

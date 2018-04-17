@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Language Name="English">
+<Language Name="Portuguese">
   <LocaleResource Name="ConfigurationPanel.AutoEmptying.Enabled">
-    <Value>Schedule emptying</Value>
+    <Value>Agendar Esvaziamento</Value>
   </LocaleResource>
   <LocaleResource Name="ConfigurationPanel.AutoEmptying.Summary">
-    <Value>Auto emptying is carried out daily from {0} to {1} if the service is over {2} and will stop at {3} of usage.</Value>
+    <Value>O esvaziamento acontecerá a partir das {0} até as {1} se o serviço estiver acima de {2} continuará até alcançar {3} de uso.</Value>
   </LocaleResource>
   <LocaleResource Name="CityServicePanel.AutoEmptying.Disabled">
-    <Value>Disable auto-emptying</Value>
+    <Value>Desabilitar Auto Esvaziamento</Value>
   </LocaleResource>
 </Language>

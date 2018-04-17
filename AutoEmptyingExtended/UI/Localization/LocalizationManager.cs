@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using ColossalFramework.Globalization;
+using UnityEngine;
 
 namespace AutoEmptyingExtended.UI.Localization
 {

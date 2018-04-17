@@ -40,8 +40,8 @@ namespace AutoEmptyingExtended.UI.Panels
         private UILabel _summaryLabel;
 
         private string _summaryFormat;
-        private const string TimeFormat = "0#.00";
-        private const string FilledFormat = "###'%'";
+        private const string TimeFormat = "0#'h'";
+        private const string FilledFormat = "##0'%'";
 
         protected ConfigurationDataContainer Data;
 
@@ -58,7 +58,8 @@ namespace AutoEmptyingExtended.UI.Panels
             return string.Format(_summaryFormat,
                     Data.EmptyingTimeStart.ToString(TimeFormat),
                     Data.EmptyingTimeEnd.ToString(TimeFormat),
-                    Data.EmptyingPercentStart.ToString(FilledFormat));
+                    Data.EmptyingPercentStart.ToString(FilledFormat),
+                    Data.EmptyingPercentStop.ToString(FilledFormat));
         }
 
         #endregion
@@ -87,7 +88,7 @@ namespace AutoEmptyingExtended.UI.Panels
             _percentRange.IconAtlas = resourceManager.Atlas;
             _percentRange.IconSprite = "DimensionIcon";
             _percentRange.ValueFormat = FilledFormat;
-            _percentRange.MinValue = 1f;
+            _percentRange.MinValue = 0f;
             _percentRange.MaxValue = 100f;
             _percentRange.StepSize = 1f;
 
@@ -123,6 +124,8 @@ namespace AutoEmptyingExtended.UI.Panels
             _summaryLabel.width = width - padding.horizontal;
             _summaryLabel.autoHeight = true;
             _summaryLabel.wordWrap = true;
+            _summaryLabel.textScale = 0.75f;
+            
 
             // update displayed values
             _enabledCheckbox.Checked = !Data.AutoEmptyingDisabled;
@@ -132,16 +135,25 @@ namespace AutoEmptyingExtended.UI.Panels
             _percentRange.StartValue = Data.EmptyingPercentStop;
 
             // add events
-            _enabledCheckbox.EventCheckChanged += (component, value) => { Data.AutoEmptyingDisabled = !value; };
+            //Mod Enable or disable
+            _enabledCheckbox.EventCheckChanged += (component, value) => 
+            {
+                Data.AutoEmptyingDisabled = !value;
+                Data.HasJustChanged = true;
+            };
+            //time Changer events
             _timeRange.EventStartValueChanged += (component, value) =>
             {
                 Data.EmptyingTimeStart = value;
                 _summaryLabel.text = FormatSummaryValue();
+                Data.HasJustChanged = true;
             };
             _timeRange.EventEndValueChanged += (component, value) => {
                 Data.EmptyingTimeEnd = value;
                 _summaryLabel.text = FormatSummaryValue();
+                Data.HasJustChanged = true;
             };
+            //Amount Changing events
             //guarantee that only valid values are assigned and make some sense
             //start value == percentage to stop
             _percentRange.EventStartValueChanged += (component, value) =>
@@ -158,8 +170,9 @@ namespace AutoEmptyingExtended.UI.Panels
                 }
 
                 _summaryLabel.text = FormatSummaryValue();
+                Data.HasJustChanged = true;
             };
-            //end value == percentage to start
+
             _percentRange.EventEndValueChanged += (component, value) =>
             {
                 if (value >= (_percentRange.StartValue + 5f))
@@ -169,12 +182,11 @@ namespace AutoEmptyingExtended.UI.Panels
                 else if(value < _percentRange.StartValue + 5f)
                 {
                     value = _percentRange.StartValue + 5f;
-                    Data.EmptyingPercentStop = value;
+                    Data.EmptyingPercentStart = value;
                     _percentRange.EndValue = value;
                 }
                 _summaryLabel.text = FormatSummaryValue();
                 Data.HasJustChanged = true;
-
             };
 
             // show summary
